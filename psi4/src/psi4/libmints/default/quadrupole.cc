@@ -25,10 +25,10 @@
  *
  * @END LICENSE
  */
-#include "psi4/libmints/tracelessquadrupole.h"
+#include "psi4/libmints/default/quadrupole.h"
+#include "psi4/libmints/vector.h"
 #include "psi4/libmints/molecule.h"
 #include "psi4/libmints/basisset.h"
-#include "psi4/libmints/integral.h"
 #include "psi4/libciomr/libciomr.h"
 #include "psi4/physconst.h"
 
@@ -38,7 +38,7 @@
 using namespace psi;
 
 // Initialize overlap_recur_ to +2 basis set angular momentum
-TracelessQuadrupoleInt::TracelessQuadrupoleInt(std::vector<SphericalTransform>& st, std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2) :
+QuadrupoleInt::QuadrupoleInt(std::vector<SphericalTransform>& st, std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2) :
     OneBodyAOInt(st, bs1, bs2), overlap_recur_(bs1->max_am()+2, bs2->max_am()+2)
 {
     int maxam1 = bs1_->max_am();
@@ -52,13 +52,31 @@ TracelessQuadrupoleInt::TracelessQuadrupoleInt(std::vector<SphericalTransform>& 
     set_chunks(6);
 }
 
-TracelessQuadrupoleInt::~TracelessQuadrupoleInt()
+QuadrupoleInt::~QuadrupoleInt()
 {
     delete[] buffer_;
 }
 
-void TracelessQuadrupoleInt::compute_pair(const GaussianShell& s1,
-                                          const GaussianShell& s2)
+SharedVector QuadrupoleInt::nuclear_contribution(std::shared_ptr<Molecule> mol, const Vector3 &origin)
+{
+    std::shared_ptr<Vector> sret(new Vector(6));
+    double *ret = sret->pointer();
+
+    for (int i=0; i<mol->natom(); ++i) {
+        Vector3 geom = mol->xyz(i) - origin;
+        ret[0] += mol->Z(i) * geom[0] * geom[0]; // xx
+        ret[1] += mol->Z(i) * geom[0] * geom[1]; // xy
+        ret[2] += mol->Z(i) * geom[0] * geom[2]; // xz
+        ret[3] += mol->Z(i) * geom[1] * geom[1]; // yy
+        ret[4] += mol->Z(i) * geom[1] * geom[2]; // yz
+        ret[5] += mol->Z(i) * geom[2] * geom[2]; // zz
+    }
+
+    return sret;
+}
+
+void QuadrupoleInt::compute_pair(const GaussianShell& s1,
+                                 const GaussianShell& s2)
 {
     int ao12;
     int am1 = s1.am();
@@ -151,14 +169,12 @@ void TracelessQuadrupoleInt::compute_pair(const GaussianShell& s1,
                             double mxz = -over_pf*(x01+x00*(B[0] - origin_[0]))*y00*(z01+z00*(B[2] - origin_[2]));
                             double myz = -over_pf*x00*(y01+y00*(B[1] - origin_[1]))*(z01+z00*(B[2] - origin_[2]));
 
-                            double mrr = (1.0 / 3.0) * (mxx + myy + mzz);
-
-                            buffer_[ao12]        += (3.0/2.0) * (mxx - mrr);
-                            buffer_[ao12+xydisp] += (3.0/2.0) * mxy;
-                            buffer_[ao12+xzdisp] += (3.0/2.0) * mxz;
-                            buffer_[ao12+yydisp] += (3.0/2.0) * (myy - mrr);
-                            buffer_[ao12+yzdisp] += (3.0/2.0) * myz;
-                            buffer_[ao12+zzdisp] += (3.0/2.0) * (mzz - mrr);
+                            buffer_[ao12]        += mxx;
+                            buffer_[ao12+xydisp] += mxy;
+                            buffer_[ao12+xzdisp] += mxz;
+                            buffer_[ao12+yydisp] += myy;
+                            buffer_[ao12+yzdisp] += myz;
+                            buffer_[ao12+zzdisp] += mzz;
 
                             ao12++;
                         }

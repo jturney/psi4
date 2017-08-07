@@ -26,48 +26,50 @@
  * @END LICENSE
  */
 
-#ifndef _psi_src_lib_libmints_nabla_h_
-#define _psi_src_lib_libmints_nabla_h_
+#ifndef _psi_src_lib_libmints_multipoles_h_
+#define _psi_src_lib_libmints_multipoles_h_
 
- #include "psi4/pragma.h"
- PRAGMA_WARNING_PUSH
- PRAGMA_WARNING_IGNORE_DEPRECATED_DECLARATIONS
- #include <memory>
- PRAGMA_WARNING_POP
+#include "psi4/libmints/typedefs.h"
 #include "psi4/libmints/onebody.h"
 #include "psi4/libmints/osrecur.h"
+#include "psi4/libmints/integral.h"
+
+#include <vector>
 
 namespace psi {
-
-    class BasisSet;
-    class GaussianShell;
-    class SphericalTransform;
+class Molecule;
 
 /*! \ingroup MINTS
- *  \class DipoleInt
- *  \brief Computes dipole integrals.
+ *  \class MultipoleInt
+ *  \brief Computes arbitrary-order multipole integrals.
  *
  * Use an IntegralFactory to create this object. */
-class NablaInt : public OneBodyAOInt
+class MultipoleInt : public OneBodyAOInt
 {
     //! Obara and Saika recursion object to be used.
-    ObaraSaikaTwoCenterRecursion overlap_recur_;
+    ObaraSaikaTwoCenterMIRecursion mi_recur_;
 
-    //! Computes the dipole between two gaussian shells.
+    //! Computes the multipole integrals between two gaussian shells.
     void compute_pair(const GaussianShell&, const GaussianShell&);
-    //! Computes the dipole derivative between two gaussian shells.
-//    void compute_pair_deriv1(const GaussianShell&, const GaussianShell&);
 
+    //! Computes the multipole derivative between two gaussian shells.
+    void compute_pair_deriv1(const GaussianShell&, const GaussianShell&){ throw PSIEXCEPTION("NYI"); }
+
+    //! The order of multipole moment to compute
+    int order_;
 public:
-    //! Constructor. Do not call directly use an IntegralFactory.
-    NablaInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
+    //! Constructor. Do not call directly. Use an IntegralFactory.
+    MultipoleInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>,
+                 std::shared_ptr<BasisSet>, int order, int deriv=0);
     //! Virtual destructor
-    virtual ~NablaInt();
+    virtual ~MultipoleInt();
 
     //! Does the method provide first derivatives?
-    bool has_deriv1() { return true; }
+    bool has_deriv1() { return false; }
+
+    /// Returns the nuclear contribution to the multipole moments, with angular momentum up to order
+    static SharedVector nuclear_contribution(std::shared_ptr<Molecule> mol, int order, const Vector3 &origin);
 };
 
 }
-
 #endif

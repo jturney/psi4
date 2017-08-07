@@ -25,7 +25,7 @@
  *
  * @END LICENSE
  */
-#include "psi4/libmints/electricfield.h"
+#include "psi4/libmints/default/electricfield.h"
 #include "psi4/libmints/molecule.h"
 #include "psi4/libmints/basisset.h"
 #include <stdexcept>

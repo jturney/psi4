@@ -26,38 +26,47 @@
  * @END LICENSE
  */
 
-#ifndef _psi_src_lib_libmints_tracelessquadrupole_h_
-#define _psi_src_lib_libmints_tracelessquadrupole_h_
+#ifndef _psi_src_lib_libmints_nabla_h_
+#define _psi_src_lib_libmints_nabla_h_
 
-#include <vector>
- #include "psi4/pragma.h"
- PRAGMA_WARNING_PUSH
- PRAGMA_WARNING_IGNORE_DEPRECATED_DECLARATIONS
- #include <memory>
- PRAGMA_WARNING_POP
-#include "psi4/libmints/osrecur.h"
+#include "psi4/pragma.h"
 #include "psi4/libmints/onebody.h"
+#include "psi4/libmints/osrecur.h"
+
+PRAGMA_WARNING_PUSH
+PRAGMA_WARNING_IGNORE_DEPRECATED_DECLARATIONS
+#include <memory>
+PRAGMA_WARNING_POP
 
 namespace psi {
 
-class GaussianShell;
-class SphericalTransform;
-class BasisSet;
+    class BasisSet;
+    class GaussianShell;
+    class SphericalTransform;
 
 /*! \ingroup MINTS
- *  \class TracelessQuadrupoleInt
- *  \brief Computes quadrupole integrals. At last check this may not be working.
- *  Use an IntegralFactory to create this object.
- */
-class TracelessQuadrupoleInt : public OneBodyAOInt
+ *  \class DipoleInt
+ *  \brief Computes dipole integrals.
+ *
+ * Use an IntegralFactory to create this object. */
+class NablaInt : public OneBodyAOInt
 {
+    //! Obara and Saika recursion object to be used.
     ObaraSaikaTwoCenterRecursion overlap_recur_;
 
-    // This the work horse function.
+    //! Computes the dipole between two gaussian shells.
     void compute_pair(const GaussianShell&, const GaussianShell&);
+    //! Computes the dipole derivative between two gaussian shells.
+//    void compute_pair_deriv1(const GaussianShell&, const GaussianShell&);
+
 public:
-    TracelessQuadrupoleInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>);
-    virtual ~TracelessQuadrupoleInt();
+    //! Constructor. Do not call directly use an IntegralFactory.
+    NablaInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
+    //! Virtual destructor
+    virtual ~NablaInt();
+
+    //! Does the method provide first derivatives?
+    bool has_deriv1() { return true; }
 };
 
 }

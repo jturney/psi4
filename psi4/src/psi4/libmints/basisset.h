@@ -29,32 +29,27 @@
 #ifndef _psi_src_lib_libmints_basisset_h_
 #define _psi_src_lib_libmints_basisset_h_
 
-#include "gshell.h"
-
 #include "psi4/pragma.h"
+#include "psi4/libmints/gshell.h"
 #include "psi4/libmints/typedefs.h"
+#include "psi4/libmints/molecule.h"
 #include "psi4/psi4-dec.h"
 
 #include <cstdio>
 #include <string>
 #include <vector>
 #include <map>
- PRAGMA_WARNING_PUSH
- PRAGMA_WARNING_IGNORE_DEPRECATED_DECLARATIONS
- #include <memory>
- PRAGMA_WARNING_POP
+
+PRAGMA_WARNING_PUSH
+PRAGMA_WARNING_IGNORE_DEPRECATED_DECLARATIONS
+#include <memory>
+PRAGMA_WARNING_POP
 
 namespace psi {
-
-
-
-class Molecule;
-class GaussianShell;
 
 class BasisSetParser;
 class SOBasisSet;
 class IntegralFactory;
-
 
 /*! \ingroup MINTS */
 
@@ -171,7 +166,7 @@ protected:
 public:
     BasisSet();
 
-    BasisSet(const std::string &basistype, SharedMolecule mol,
+    BasisSet(const std::string &basistype, std::shared_ptr<Molecule> mol,
              std::map<std::string, std::map<std::string, std::vector<ShellInfo> > > &shell_map,
              std::map<std::string, std::map<std::string, std::vector<ShellInfo> > > &ecp_shell_map);
 
@@ -296,7 +291,7 @@ public:
     void set_n_ecp_core(const std::string &label, int n) { ncore_[std::string(label)] = n; }
 
     /// Number of frozen core for molecule given freezing state, accounting for any ECP present
-    int n_frozen_core(const std::string& depth = "", SharedMolecule mol=nullptr);
+    int n_frozen_core(const std::string& depth = "", std::shared_ptr<Molecule> mol=nullptr);
 
     /** @{
      *  Print the basis set.

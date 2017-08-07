@@ -33,7 +33,7 @@
 #include <vector>
 #include "psi4/libpsio/psio.hpp"
 #include "psi4/pragma.h"
-#include "psi4/libmints/potentialint.h"
+#include "psi4/libmints/default/potentialint.h"
  PRAGMA_WARNING_PUSH
  PRAGMA_WARNING_IGNORE_DEPRECATED_DECLARATIONS
  #include <memory>

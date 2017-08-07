@@ -39,8 +39,8 @@
 #define DEFAULT_SYM_TOL 1.0E-8
 #define FULL_PG_TOL 1.0e-8 // default
 
-#include "typedefs.h"
-#include "coordentry.h"
+#include "psi4/libmints/typedefs.h"
+#include "psi4/libmints/coordentry.h"
 
 namespace psi {
 class PointGroup;

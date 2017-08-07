@@ -26,21 +26,22 @@
  * @END LICENSE
  */
 
-#include "psi4/psifiles.h"
-#include "psi4/psi4-dec.h"
-#include "psi4/physconst.h"
+#include "psi4/libmints/default/x2cint.h"
+#include "psi4/libmints/default/rel_potential.h"
 
 #include "psi4/libciomr/libciomr.h"
 #include "psi4/libpsio/psio.h"
-#include "psi4/libmints/rel_potential.h"
 #include "psi4/libmints/integral.h"
-#include "psi4/libmints/x2cint.h"
 #include "psi4/libmints/sointegral_onebody.h"
 #include "psi4/libmints/vector.h"
 #include "psi4/libmints/factory.h"
 #include "psi4/libmints/sobasis.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libpsi4util/PsiOutStream.h"
+
+#include "psi4/psifiles.h"
+#include "psi4/psi4-dec.h"
+#include "psi4/physconst.h"
 
 namespace psi {
 

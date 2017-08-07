@@ -26,11 +26,11 @@
  * @END LICENSE
  */
 
-#include "psi4/libmints/eri.h"
+#include "psi4/libmints/default/eri.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/integral.h"
 #include "psi4/libmints/fjt.h"
-;
+
 using namespace psi;
 
 /////////

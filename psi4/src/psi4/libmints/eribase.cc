@@ -30,7 +30,7 @@
 #include "psi4/libqt/qt.h"
 #include "psi4/physconst.h"
 #include "psi4/libpsi4util/exception.h"
-#include "psi4/libmints/eri.h"
+#include "psi4/libmints/default/eri.h"      // TODO: Remove this dependency
 #include "psi4/libmints/integral.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/fjt.h"

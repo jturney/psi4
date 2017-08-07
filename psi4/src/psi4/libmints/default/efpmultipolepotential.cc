@@ -26,7 +26,7 @@
  * @END LICENSE
  */
 
-#include "psi4/libmints/efpmultipolepotential.h"
+#include "psi4/libmints/default/efpmultipolepotential.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/integral.h"
 

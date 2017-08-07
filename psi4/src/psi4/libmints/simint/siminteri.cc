@@ -28,7 +28,7 @@
 
 #include <algorithm>
 
-#include "psi4/libmints/siminteri.h"
+#include "psi4/libmints/simint/siminteri.h"
 #include "psi4/libmints/gshell.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/cartesianiter.h"
@@ -87,7 +87,7 @@ create_shell_vec_(const BasisSet & bs)
         shells->push_back(psi_shell_to_simint_(bs.shell(i)));
 
     return shells;
-} 
+}
 
 static std::shared_ptr<ShellPairVec>
 create_shell_pair_(const ShellVec & bs1, const ShellVec & bs2)
@@ -126,7 +126,7 @@ create_multi_shellpair_(const std::vector<ShellPairBlock> & vsh,
     for(const auto & spairs : vsh)
     {
         std::vector<simint_shell> simint_shells;
-        
+
         for(const auto & s : spairs)
         {
             simint_shells.push_back(shell1[s.first]);
@@ -216,7 +216,7 @@ SimintTwoElectronInt::SimintTwoElectronInt(const IntegralFactory * integral, int
         shells4_ = shells3_;
     else
         shells4_ = create_shell_vec_(*original_bs4_);
-    
+
 
     bra_same_ = (original_bs1_ == original_bs2_);
     ket_same_ = (original_bs3_ == original_bs4_);
@@ -429,7 +429,7 @@ SimintTwoElectronInt::compute_shell_blocks(int shellpair1, int shellpair2,
                     auto sh34 = vsh34[j];
                     pure_transform(sh12.first, sh12.second,
                                    sh34.first, sh34.second, 1, false);
-    
+
                     source_ += ncart1234;
                     target_ += n1234;
                 }
@@ -443,7 +443,7 @@ void SimintTwoElectronInt::create_blocks(void)
     blocks12_.clear();
     blocks34_.clear();
 
-    // make the significant shell pairs 
+    // make the significant shell pairs
     // (form blocks of MU,NU)
     const auto am1 = basis1()->max_am();
     const auto am2 = basis2()->max_am();
@@ -519,8 +519,8 @@ void SimintTwoElectronInt::create_blocks(void)
             blocks34_.push_back(std::move(curblock));
     }
 
-    multi_spairs_bra_ = create_shared_multi_shellpair_(blocks12_, *shells1_, *shells2_); 
-    multi_spairs_ket_ = create_shared_multi_shellpair_(blocks34_, *shells3_, *shells4_); 
+    multi_spairs_bra_ = create_shared_multi_shellpair_(blocks12_, *shells1_, *shells2_);
+    multi_spairs_ket_ = create_shared_multi_shellpair_(blocks34_, *shells3_, *shells4_);
 
 }
 

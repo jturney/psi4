@@ -25,23 +25,24 @@
  *
  * @END LICENSE
  */
-
-#include "psi4/libciomr/libciomr.h"
-#include "psi4/libmints/angularmomentum.h"
+#include "psi4/libmints/default/nabla.h"
+#include "psi4/libmints/integral.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/molecule.h"
-#include "psi4/libmints/integral.h"
+
+#include <stdexcept>
+#include "psi4/libciomr/libciomr.h"
 #include "psi4/physconst.h"
 
-#include <memory>
-#include <stdexcept>
-
 using namespace psi;
+;
 
-// Initialize overlap_recur_ to +1 basis set angular momentum, +1 on each center is sufficient
-// to compute the dipole derivatives
-AngularMomentumInt::AngularMomentumInt(std::vector<SphericalTransform>& spherical_transforms, std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, int nderiv) :
-    OneBodyAOInt(spherical_transforms, bs1, bs2, nderiv), overlap_recur_(bs1->max_am()+1, bs2->max_am()+1)
+// to compute the Nabla derivatives
+NablaInt::NablaInt(std::vector<SphericalTransform>& spherical_transforms,
+                   std::shared_ptr<BasisSet> bs1,
+                   std::shared_ptr<BasisSet> bs2,
+                   int nderiv)
+    : OneBodyAOInt(spherical_transforms, bs1, bs2, nderiv), overlap_recur_(bs1->max_am()+2, bs2->max_am()+2)
 {
     int maxam1 = bs1_->max_am();
     int maxam2 = bs2_->max_am();
@@ -61,13 +62,13 @@ AngularMomentumInt::AngularMomentumInt(std::vector<SphericalTransform>& spherica
     }
 }
 
-AngularMomentumInt::~AngularMomentumInt()
+NablaInt::~NablaInt()
 {
     delete[] buffer_;
 }
 
 // The engine only supports segmented basis sets
-void AngularMomentumInt::compute_pair(const GaussianShell& s1, const GaussianShell& s2)
+void NablaInt::compute_pair(const GaussianShell& s1, const GaussianShell& s2)
 {
     int ao12;
     int am1 = s1.am();
@@ -75,14 +76,6 @@ void AngularMomentumInt::compute_pair(const GaussianShell& s1, const GaussianShe
     int nprim1 = s1.nprimitive();
     int nprim2 = s2.nprimitive();
     double A[3], B[3];
-    double Sxy1, Sxy2, Sxz1, Sxz2;
-    double Syx1, Syx2, Syz1, Syz2;
-    double Szx1, Szx2, Szy1, Szy2;
-    double S0x1, S0x2, S0y1, S0y2, S0z1, S0z2;
-    double muxy1, muxy2, muxz1, muxz2;
-    double muyx1, muyx2, muyz1, muyz2;
-    double muzx1, muzx2, muzy1, muzy2;
-
     A[0] = s1.center()[0];
     A[1] = s1.center()[1];
     A[2] = s1.center()[2];
@@ -130,7 +123,7 @@ void AngularMomentumInt::compute_pair(const GaussianShell& s1, const GaussianShe
             double over_pf = exp(-a1*a2*AB2*oog) * sqrt(M_PI*oog) * M_PI * oog * c1 * c2;
 
             // Do recursion
-            overlap_recur_.compute(PA, PB, gamma, am1+1, am2+1);
+            overlap_recur_.compute(PA, PB, gamma, am1+2, am2+2);
 
             ao12 = 0;
             for(int ii = 0; ii <= am1; ii++) {
@@ -145,129 +138,31 @@ void AngularMomentumInt::compute_pair(const GaussianShell& s1, const GaussianShe
                             int m2 = kk - ll;
                             int n2 = ll;
 
-                            double x00 = x[l1][l2],   y00 = y[m1][m2],   z00 = z[n1][n2];
-                            double x10 = x[l1+1][l2], y10 = y[m1+1][m2], z10 = z[n1+1][n2];
-                            double x01 = x[l1][l2+1], y01 = y[m1][m2+1], z01 = z[n1][n2+1];
+                            double x00 = x[l1][l2],
+                                   y00 = y[m1][m2],
+                                   z00 = z[n1][n2];
+                            double x01 = x[l1][l2+1],
+                                   y01 = y[m1][m2+1],
+                                   z01 = z[n1][n2+1];
 
-                            Sxy1 = Sxy2 = Sxz1 = Sxz2 = 0.0;
+                            double nx = -2.0*a2*x01;
+                            if (l2 >= 1)
+                                nx += l2*x[l1][l2-1];
+                            double ny = -2.0*a2*y01;
+                            if (m2 >= 1)
+                                ny += m2*y[m1][m2-1];
+                            double nz = -2.0*a2*z01;
+                            if (n2 >= 1)
+                                nz += n2*z[n1][n2-1];
 
-                            //
-                            // Overlaps
-                            //
-
-                            // (a+1x|b+1y)
-                            Sxy1 = x10 * y01 * z00 * over_pf;
-                            // (a+1x|b-1y)
-                            if (m2)
-                                Sxy2 = x10 * y[m1][m2-1] * z00 * over_pf;
-                            // (a+1x|b+1z)
-                            Sxz1 = x10 * y00 * z01 * over_pf;
-                            // (a+1x|b-1z)
-                            if (n2)
-                                Sxz2 = x10 * y00 * z[n1][n2-1] * over_pf;
-
-//                            outfile->Printf( "Sxy1 %f Sxy2 %f Sxz1 %f Sxz2 %f\n", Sxy1, Sxy2, Sxz1, Sxz2);
-
-                            Syx1 = Syx2 = Syz1 = Syz2 = 0.0;
-
-                            // (a+1y|b+1x)
-                            Syx1 = x01 * y10 * z00 * over_pf;
-                            // (a+1y|b-1x)
-                            if (l2)
-                                Syx2 = x[l1][l2-1] * y10 * z00 * over_pf;
-                            // (a+1y|b+1z)
-                            Syz1 = x00 * y10 * z01 * over_pf;
-                            // (a+1y|b-1z)
-                            if (n2)
-                                Syz2 = x00 * y10 * z[n1][n2-1] * over_pf;
-
-//                            outfile->Printf( "Syx1 %f Syx2 %f Syz1 %f Syz2 %f\n", Syx1, Syx2, Syz1, Syz2);
-
-                            Szx1 = Szx2 = Szy1 = Szy2 = 0.0;
-
-                            // (a+1z|b+1x)
-                            Szx1 = x01 * y00 * z10 * over_pf;
-                            // (a+1z|b-1x)
-                            if (l2)
-                                Szx2 = x[l1][l2-1] * y00 * z10 * over_pf;
-                            // (a+1z|b+1y)
-                            Szy1 = x00 * y01 * z10 * over_pf;
-                            // (a+1z|b-1y)
-                            if (m2)
-                                Szy2 = x00 * y[m1][m2-1] * z10 * over_pf;
-
-//                            outfile->Printf( "Szx1 %f Szx2 %f Szy1 %f Szy2 %f\n", Szx1, Szx2, Szy1, Szy2);
-
-                            S0x1 = S0x2 = S0y1 = S0y2 = S0z1 = S0z2 = 0.0;
-
-                            // (a|b+1x)
-                            S0x1 = x01 * y00 * z00 * over_pf;
-                            // (a|b-1x)
-                            if (l2)
-                                S0x2 = x[l1][l2-1] * y00 * z00 * over_pf;
-                            // (a|b+1y)
-                            S0y1 = x00 * y01 * z00 * over_pf;
-                            // (a|b-1y)
-                            if (m2)
-                                S0y2 = x00 * y[m1][m2-1] * z00 * over_pf;
-                            // (a|b+1z)
-                            S0z1 = x00 * y00 * z01 * over_pf;
-                            // (a|b-1z)
-                            if (n2)
-                                S0z2 = x00 * y00 * z[n1][n2-1] * over_pf;
-
-//                            outfile->Printf( "S0x1 %f S0x2 %f S0y1 %f S0y2 %f S0z1 S0z2\n", S0x1, S0x2, S0y1, S0y2, S0z1, S0z2);
-
-                            //
-                            // Moment integrals
-                            //
-
-                            muxy1 = muxy2 = muxz1 = muxz2 = 0.0;
-                            // (a|x|b+1y)
-                            muxy1 = Sxy1 + (A[0] - origin_[0]) * S0y1;
-                            // (a|x|b+1z)
-                            muxz1 = Sxz1 + (A[0] - origin_[0]) * S0z1;
-                            // (a|x|b-1y)
-                            muxy2 = Sxy2 + (A[0] - origin_[0]) * S0y2;
-                            // (a|x|b-1z)
-                            muxz2 = Sxz2 + (A[0] - origin_[0]) * S0z2;
-
-                            muyx1 = muyx2 = muyz1 = muyz2 = 0.0;
-                            // (a|y|b+1x)
-                            muyx1 = Syx1 + (A[1] - origin_[1]) * S0x1;
-                            // (a|y|b+1z)
-                            muyz1 = Syz1 + (A[1] - origin_[1]) * S0z1;
-                            // (a|y|b-1x)
-                            muyx2 = Syx2 + (A[1] - origin_[1]) * S0x2;
-                            // (a|y|b-1z)
-                            muyz2 = Syz2 + (A[1] - origin_[1]) * S0z2;
-
-                            muzx1 = muzx2 = muzy1 = muzy2 = 0.0;
-                            // (a|z|b+1x)
-                            muzx1 = Szx1 + (A[2] - origin_[2]) * S0x1;
-                            // (a|z|b+1y)
-                            muzy1 = Szy1 + (A[2] - origin_[2]) * S0y1;
-                            // (a|z|b+1x)
-                            muzx2 = Szx2 + (A[2] - origin_[2]) * S0x2;
-                            // (a|z|b+1y)
-                            muzy2 = Szy2 + (A[2] - origin_[2]) * S0y2;
-
-                            /* (a|Lx|b) = 2 a2 * (a|(y-Cy)|b+1z) - B.z * (a|(y-Cy)|b-1z)
-                               - 2 a2 * (a|(z-Cz)|b+1y) + B.y * (a|(z-Cz)|b-1y) */
-                            double Lx = (2.0*a2*muyz1 - n2*muyz2 - 2.0*a2*muzy1 + m2*muzy2)/* * over_pf*/;
-
-                            /* (a|Ly|b) = 2 a2 * (a|(z-Cz)|b+1x) - B.x * (a|(z-Cz)|b-1x)
-                               - 2 a2 * (a|(x-Cx)|b+1z) + B.z * (a|(x-Cx)|b-1z) */
-                            double Ly = (2.0*a2*muzx1 - l2*muzx2 - 2.0*a2*muxz1 + n2*muxz2)/* * over_pf*/;
-
-                            /* (a|Lz|b) = 2 a2 * (a|(x-Cx)|b+1y) - B.y * (a|(x-Cx)|b-1y)
-                               - 2 a2 * (a|(y-Cy)|b+1x) + B.x * (a|(y-Cy)|b-1x) */
-                            double Lz = (2.0*a2*muxy1 - m2*muxy2 - 2.0*a2*muyx1 + l2*muyx2)/* * over_pf*/;
+                            double NAx = nx * y00 * z00 * over_pf;
+                            double NAy = x00 * ny * z00 * over_pf;
+                            double NAz = x00 * y00 * nz * over_pf;
 
                             // Electrons have a negative charge
-                            buffer_[ao12]       += (Lx);
-                            buffer_[ao12+ydisp] += (Ly);
-                            buffer_[ao12+zdisp] += (Lz);
+                            buffer_[ao12]       += (NAx);
+                            buffer_[ao12+ydisp] += (NAy);
+                            buffer_[ao12+zdisp] += (NAz);
 
                             ao12++;
                         }
@@ -280,7 +175,7 @@ void AngularMomentumInt::compute_pair(const GaussianShell& s1, const GaussianShe
 
 #if 0
 // The engine only supports segmented basis sets
-void AngularMomentumInt::compute_pair_deriv1(const GaussianShell& s1, const GaussianShell& s2)
+void NablaInt::compute_pair_deriv1(const GaussianShell& s1, const GaussianShell& s2)
 {
     int ao12;
     int am1 = s1->am();
@@ -357,7 +252,7 @@ void AngularMomentumInt::compute_pair_deriv1(const GaussianShell& s1, const Gaus
 
             double over_pf = exp(-a1*a2*AB2*oog) * sqrt(M_PI*oog) * M_PI * oog * c1 * c2;
 
-            // Do recursion, this is sufficient information to compute dipole derivatives
+            // Do recursion, this is sufficient information to compute Nabla derivatives
             overlap_recur_.compute(PA, PB, gamma, am1+1, am2+1);
 
             ao12 = 0;

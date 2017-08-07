@@ -26,45 +26,50 @@
  * @END LICENSE
  */
 
-#ifndef _psi_src_lib_libmints_dipole_h_
-#define _psi_src_lib_libmints_dipole_h_
+#ifndef _psi_src_lib_libmints_electricfield_h_
+#define _psi_src_lib_libmints_electricfield_h_
+
+#include "psi4/libmints/typedefs.h"
+#include "psi4/libmints/osrecur.h"
+#include "psi4/libmints/vector3.h"
+#include "psi4/libmints/integral.h"
 
 #include <vector>
-#include "typedefs.h"
-
-#include "psi4/libmints/osrecur.h"
-#include "psi4/libmints/onebody.h"
 
 namespace psi {
-class SphericalTransform;
 class Molecule;
 
 /*! \ingroup MINTS
- *  \class DipoleInt
- *  \brief Computes dipole integrals.
+ *  \class ElectricFieldInt
+ *  \brief Computes electric field integrals.
  *
- * Use an IntegralFactory to create this object. */
-class DipoleInt : public OneBodyAOInt
+ *  Use an IntegralFactory to create this object.
+ */
+class ElectricFieldInt : public OneBodyAOInt
 {
     //! Obara and Saika recursion object to be used.
-    ObaraSaikaTwoCenterRecursion overlap_recur_;
+    ObaraSaikaTwoCenterElectricField efield_recur_;
 
-    //! Computes the dipole between two gaussian shells.
+    //! Number of atoms.
+    int natom_;
+
+    //! Computes the electric field between two gaussian shells.
     void compute_pair(const GaussianShell&, const GaussianShell&);
-    //! Computes the dipole derivative between two gaussian shells.
+
+    //! Computes the electric field gradient between two gaussian shells.
     void compute_pair_deriv1(const GaussianShell&, const GaussianShell&);
 
 public:
     //! Constructor. Do not call directly use an IntegralFactory.
-    DipoleInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
+    ElectricFieldInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
     //! Virtual destructor
-    virtual ~DipoleInt();
+    virtual ~ElectricFieldInt();
 
     //! Does the method provide first derivatives?
     bool has_deriv1() { return true; }
 
-    /// Returns the nuclear contribution to the dipole moment
-    static SharedVector nuclear_contribution(std::shared_ptr<Molecule> mol, const Vector3 &origin);
+    static Vector3 nuclear_contribution(const Vector3 &origin, std::shared_ptr<Molecule> mol);
+    static SharedMatrix nuclear_contribution_to_gradient(const Vector3 &origin, std::shared_ptr<Molecule> mol);
 };
 
 }

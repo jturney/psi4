@@ -26,7 +26,7 @@
  * @END LICENSE
  */
 
-#include "psi4/libmints/electrostatic.h"
+#include "psi4/libmints/default/electrostatic.h"
 #include "psi4/libciomr/libciomr.h"
 #include "psi4/physconst.h"
 #include "psi4/libmints/molecule.h"

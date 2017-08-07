@@ -29,11 +29,13 @@
 #ifndef _psi_src_lib_libmints_quadrupole_h_
 #define _psi_src_lib_libmints_quadrupole_h_
 
-#include <vector>
-#include "typedefs.h"
+#include "psi4/libmints/typedefs.h"
 #include "psi4/libmints/osrecur.h"
 #include "psi4/libmints/onebody.h"
 #include "psi4/libmints/integral.h"
+
+#include <vector>
+
 namespace psi {
 
 class Molecule;

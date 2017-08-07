@@ -35,7 +35,7 @@
 #include "psi4/libmints/molecule.h"
 #include "psi4/libmints/sobasis.h"
 #include "psi4/physconst.h"
-#include "typedefs.h"
+#include "psi4/libmints/typedefs.h"
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 

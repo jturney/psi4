@@ -26,7 +26,7 @@
  * @END LICENSE
  */
 
-#include "x2cint.h"
+#include "psi4/libmints/default/x2cint.h"
 
 #include "psi4/libmints/mintshelper.h"
 #include "psi4/libmints/molecule.h"

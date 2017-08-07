@@ -26,9 +26,9 @@
  * @END LICENSE
  */
 
+#include "psi4/libmints/default/rel_potential.h"
 #include "psi4/libciomr/libciomr.h"
 #include "psi4/libmints/cdsalclist.h"
-#include "psi4/libmints/rel_potential.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/osrecur.h"
 #include "psi4/libmints/integral.h"

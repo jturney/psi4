@@ -26,7 +26,7 @@
  * @END LICENSE
  */
 
-#include "psi4/libmints/multipoles.h"
+#include "psi4/libmints/default/multipoles.h"
 #include "psi4/libmints/molecule.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/vector.h"
