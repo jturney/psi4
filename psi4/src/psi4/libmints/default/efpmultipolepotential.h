@@ -90,7 +90,7 @@ class EFPMultipolePotentialInt : public OneBodyAOInt
 
 public:
     //! Constructor. Do not call directly use an IntegralFactory.
-    EFPMultipolePotentialInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
+    EFPMultipolePotentialInt(std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
     //! Virtual destructor
     virtual ~EFPMultipolePotentialInt();
 

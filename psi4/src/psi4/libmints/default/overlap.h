@@ -56,7 +56,7 @@ class OverlapInt : public OneBodyAOInt
 
 public:
     /// Constructor, it assumes you are not computing derivatives by default
-    OverlapInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
+    OverlapInt(std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
     virtual ~OverlapInt();
 
     /// Does the method provide first derivatives?

@@ -63,7 +63,7 @@ void CCEnergyWavefunction::form_df_ints(Options &options, int **cachelist, int *
     SharedMatrix Qao = dfints.Qso();
 
     // Build the symmetrization matrix for the RI basis
-    PetiteList petite(dfBasis, integral_, false);
+    PetiteList petite(dfBasis, false);
     SharedMatrix dfAOtoSO = petite.aotoso();
     const Dimension &soDim = AO2SO_->colspi();
     const Dimension &dfDim = dfAOtoSO->colspi();

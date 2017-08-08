@@ -58,7 +58,7 @@ class TracelessQuadrupoleInt : public OneBodyAOInt
     // This the work horse function.
     void compute_pair(const GaussianShell&, const GaussianShell&);
 public:
-    TracelessQuadrupoleInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>);
+    TracelessQuadrupoleInt(std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>);
     virtual ~TracelessQuadrupoleInt();
 };
 

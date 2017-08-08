@@ -101,7 +101,7 @@ public:
     ~MintsHelper();
 
     OperatorSymmetry operator_symmetry(int order) {
-        return OperatorSymmetry(order, molecule_, integral_, factory_);
+        return OperatorSymmetry(order, molecule_, factory_);
     }
 
     /// Returns the number of basis functions

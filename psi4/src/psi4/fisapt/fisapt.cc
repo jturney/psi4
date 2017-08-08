@@ -594,7 +594,7 @@ void FISAPT::nuclear()
 
     std::shared_ptr<IntegralFactory> Vfact(new IntegralFactory(primary_));
     std::shared_ptr<PotentialInt> Vint;
-    Vint = std::shared_ptr<PotentialInt>(static_cast<PotentialInt*>(Vfact->ao_potential()));
+    Vint = std::shared_ptr<PotentialInt>(static_cast<PotentialInt*>(Vfact->ao_potential().release()));
     Vint->set_charge_field(Zxyz);
 
     // > Molecular Centers < //
@@ -2837,7 +2837,7 @@ void FISAPT::felst()
     std::shared_ptr<Matrix> Zxyz2(new Matrix("Zxyz",1,4));
     double** Zxyz2p = Zxyz2->pointer();
     std::shared_ptr<IntegralFactory> Vfact2(new IntegralFactory(primary_));
-    std::shared_ptr<PotentialInt> Vint2(static_cast<PotentialInt*>(Vfact2->ao_potential()));
+    std::shared_ptr<PotentialInt> Vint2(static_cast<PotentialInt*>(Vfact2->ao_potential().release()));
     Vint2->set_charge_field(Zxyz2);
     std::shared_ptr<Matrix> Vtemp2(new Matrix("Vtemp2",nn,nn));
 
@@ -3153,7 +3153,7 @@ void FISAPT::find()
     std::shared_ptr<Matrix> Zxyz2(new Matrix("Zxyz",1,4));
     double** Zxyz2p = Zxyz2->pointer();
     std::shared_ptr<IntegralFactory> Vfact2(new IntegralFactory(primary_));
-    std::shared_ptr<PotentialInt> Vint2(static_cast<PotentialInt*>(Vfact2->ao_potential()));
+    std::shared_ptr<PotentialInt> Vint2(static_cast<PotentialInt*>(Vfact2->ao_potential().release()));
     Vint2->set_charge_field(Zxyz2);
     std::shared_ptr<Matrix> Vtemp2(new Matrix("Vtemp2",nn,nn));
 

@@ -452,15 +452,8 @@ void SOCoefficients::delete_zeros()
 
 ////////////////////////////////////////////////////////////////////////////
 
-PetiteList::PetiteList(const std::shared_ptr<BasisSet>& gbs, const std::shared_ptr<IntegralFactory>& ints,
-                       bool include_pure_transform)
-        : basis_(gbs), integral_(ints.get()), include_pure_transform_(include_pure_transform)
-{
-    init();
-}
-
-PetiteList::PetiteList(const std::shared_ptr<BasisSet>& gbs, const IntegralFactory *ints, bool include_pure_transform)
-        : basis_(gbs), integral_(ints), include_pure_transform_(include_pure_transform)
+PetiteList::PetiteList(const std::shared_ptr<BasisSet>& gbs, bool include_pure_transform)
+        : basis_(gbs), include_pure_transform_(include_pure_transform)
 {
     init();
 }
@@ -512,7 +505,7 @@ PetiteList::~PetiteList()
 
 std::shared_ptr<PetiteList> PetiteList::clone()
 {
-    return std::shared_ptr<PetiteList>(new PetiteList(basis_, integral_));
+    return std::shared_ptr<PetiteList>(new PetiteList(basis_));
 }
 
 int PetiteList::nfunction(int i) const
@@ -702,7 +695,7 @@ void PetiteList::init(double tol)
                 if (am == 0)
                     red_rep[g] += 1.0;
                 else {
-                    ShellRotation r(am, so, integral_, gbs.shell(i, s).is_pure());
+                    ShellRotation r(am, so, gbs.shell(i, s).is_pure());
                     red_rep[g] += r.trace();
                 }
             }
@@ -863,7 +856,7 @@ PetiteList::compute_aotoso_info()
                     ++bf;
                 }
             } else {
-                const SphericalTransform& trans = *integral_->spherical_transform(am);
+                const SphericalTransform& trans = SphericalTransform::transforms[am];
                 SphericalTransformIter iter(trans);
                 for (iter.first(); !iter.is_done(); iter.next()) {
                     int pure = iter.pureindex();
@@ -937,7 +930,7 @@ PetiteList::compute_aotoso_info()
                             std::map<int, double>::const_iterator coef_iter;
                             std::map<int, double>::const_iterator stop = coefficients.coefficients.end();
                             int irrep = coefficients.irrep;
-                            const SphericalTransform& trans = *integral_->spherical_transform(l);
+                            const SphericalTransform trans = SphericalTransform::transforms[l];
                             SphericalTransformIter cart_iter(trans);
                             for (cart_iter.first(); !cart_iter.is_done(); cart_iter.next()) {
                                 int cart = cart_iter.cartindex();

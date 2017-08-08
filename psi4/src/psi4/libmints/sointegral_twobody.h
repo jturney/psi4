@@ -79,7 +79,6 @@ class TwoBodySOInt
 {
 protected:
     std::vector<std::shared_ptr<TwoBodyAOInt> > tb_;
-    std::shared_ptr<IntegralFactory> integral_;
 
     std::shared_ptr<SOBasisSet> b1_;
     std::shared_ptr<SOBasisSet> b2_;
@@ -122,16 +121,12 @@ protected:
     void common_init();
 public:
     // Constructor, assuming 1 thread
-    TwoBodySOInt(const std::shared_ptr<TwoBodyAOInt>&,
-                 const std::shared_ptr<IntegralFactory>&);
+    TwoBodySOInt(const std::shared_ptr<TwoBodyAOInt>&);
     // Constructor, using vector of AO objects for threading
-    TwoBodySOInt(const std::vector<std::shared_ptr<TwoBodyAOInt> > &tb,
-                 const std::shared_ptr<IntegralFactory>& integral);
+    TwoBodySOInt(const std::vector<std::shared_ptr<TwoBodyAOInt> > &tb);
     TwoBodySOInt(const std::shared_ptr<TwoBodyAOInt>& aoint,
-                 const std::shared_ptr<IntegralFactory>& intfac,
                  const CdSalcList& cdsalcs);
     TwoBodySOInt(const std::vector<std::shared_ptr<TwoBodyAOInt> >& tb,
-                 const std::shared_ptr<IntegralFactory>& integral,
                  const CdSalcList& cdsalcs);
 
     virtual ~TwoBodySOInt();

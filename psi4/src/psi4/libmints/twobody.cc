@@ -41,12 +41,13 @@ static void transform2e_2(int, SphericalTransformIter&, double*, double*, int, i
 static void transform2e_3(int, SphericalTransformIter&, double*, double*, int, int, int);
 static void transform2e_4(int, SphericalTransformIter&, double*, double*, int, int);
 
-TwoBodyAOInt::TwoBodyAOInt(const IntegralFactory* intsfactory, int deriv) :
-    integral_(intsfactory),
-    original_bs1_(integral_->basis1()),
-    original_bs2_(integral_->basis2()),
-    original_bs3_(integral_->basis3()),
-    original_bs4_(integral_->basis4()),
+TwoBodyAOInt::TwoBodyAOInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                           std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                           int deriv) :
+    original_bs1_(bs1),
+    original_bs2_(bs2),
+    original_bs3_(bs3),
+    original_bs4_(bs4),
     bs1_(original_bs1_),
     bs2_(original_bs2_),
     bs3_(original_bs3_),
@@ -67,7 +68,7 @@ TwoBodyAOInt::TwoBodyAOInt(const IntegralFactory* intsfactory, int deriv) :
 }
 
 TwoBodyAOInt::TwoBodyAOInt(const TwoBodyAOInt & rhs)
-    : TwoBodyAOInt(rhs.integral_, rhs.deriv_)
+    : TwoBodyAOInt(rhs.bs1_, rhs.bs2_, rhs.bs3_, rhs.bs4_, rhs.deriv_)
 {
     blocks12_ = rhs.blocks12_;
     blocks34_ = rhs.blocks34_;
@@ -166,7 +167,7 @@ void TwoBodyAOInt::compute_shell_blocks(int shellpair12, int shellpair34,
     {
         const auto & shell1 = original_bs1_->shell(sh12.first);
         const auto & shell2 = original_bs2_->shell(sh12.second);
-   
+
         int n1, n2;
         if (force_cartesian_)
         {
@@ -205,8 +206,8 @@ void TwoBodyAOInt::compute_shell_blocks(int shellpair12, int shellpair34,
                                      sh34.first, sh34.second);
 
             // advance the target pointer
-            target_ += n1234; 
-            
+            target_ += n1234;
+
             // Since we are only doing one at a time we don't need to
             // move the source_ pointer
         }
@@ -469,10 +470,10 @@ void TwoBodyAOInt::pure_transform(int sh1, int sh2, int sh3, int sh4, int nchunk
     const GaussianShell& s4 = bs4_->shell(sh4);
 
     // Get the transforms from the basis set
-    SphericalTransformIter trans1(*integral()->spherical_transform(s1.am()));
-    SphericalTransformIter trans2(*integral()->spherical_transform(s2.am()));
-    SphericalTransformIter trans3(*integral()->spherical_transform(s3.am()));
-    SphericalTransformIter trans4(*integral()->spherical_transform(s4.am()));
+    SphericalTransformIter trans1((SphericalTransform::transforms[s1.am()]));
+    SphericalTransformIter trans2((SphericalTransform::transforms[s2.am()]));
+    SphericalTransformIter trans3((SphericalTransform::transforms[s3.am()]));
+    SphericalTransformIter trans4((SphericalTransform::transforms[s4.am()]));
 
     // Get the angular momentum for each shell
     int am1 = s1.am();

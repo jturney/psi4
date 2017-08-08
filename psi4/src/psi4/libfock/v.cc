@@ -103,7 +103,7 @@ void VBase::set_D(std::vector<SharedMatrix> Dvec) {
     if (!AO2USO_ && (Dvec[0]->nirrep() != 1)) {
         std::shared_ptr<IntegralFactory> integral(
             new IntegralFactory(primary_, primary_, primary_, primary_));
-        std::shared_ptr<PetiteList> pet(new PetiteList(primary_, integral));
+        std::shared_ptr<PetiteList> pet(new PetiteList(primary_));
         AO2USO_ = SharedMatrix(pet->aotoso());
         USO2AO_ = AO2USO_->transpose();
     }

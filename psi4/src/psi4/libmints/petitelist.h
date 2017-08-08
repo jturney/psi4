@@ -37,14 +37,12 @@
 #include <stdint.h>
 
  #include "psi4/pragma.h"
- PRAGMA_WARNING_PUSH
- PRAGMA_WARNING_IGNORE_DEPRECATED_DECLARATIONS
- #include <memory>
- PRAGMA_WARNING_POP
+PRAGMA_WARNING_PUSH
+PRAGMA_WARNING_IGNORE_DEPRECATED_DECLARATIONS
+#include <memory>
+PRAGMA_WARNING_POP
 
 namespace psi {
-
-
 
 class BasisSet;
 class Molecule;
@@ -162,7 +160,6 @@ class PetiteList
     bool c1_;
 
     std::shared_ptr<BasisSet> basis_;
-    const IntegralFactory* integral_;
 
     bool include_pure_transform_;
 
@@ -180,16 +177,13 @@ class PetiteList
     void init(double tol=0.05);
 
 public:
-    PetiteList(const std::shared_ptr<BasisSet>&, const std::shared_ptr<IntegralFactory>&, bool include_pure_transform = false);
-    PetiteList(const std::shared_ptr<BasisSet>&, const IntegralFactory*, bool include_pure_transform = false);
+    PetiteList(const std::shared_ptr<BasisSet>&, bool include_pure_transform = false);
     ~PetiteList();
 
     bool include_pure_transform() const {return include_pure_transform_;}
 
     /// The AO basis set used to create this petite list
     std::shared_ptr<BasisSet> basis() { return basis_; }
-    /// The integral factory used to create this petite list
-    const IntegralFactory* integral() { return integral_; }
     /// Create a clone of this petite list
     std::shared_ptr<PetiteList> clone();
 

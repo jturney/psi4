@@ -160,8 +160,7 @@ protected:
 
 public:
     /// Create an SOBasis object given a BasisSet and Integral objects.
-    SOBasisSet(const std::shared_ptr<BasisSet>&, const std::shared_ptr<IntegralFactory>&);
-    SOBasisSet(const std::shared_ptr<BasisSet>&, const IntegralFactory*);
+    SOBasisSet(const std::shared_ptr<BasisSet>&);
     ~SOBasisSet();
 
     std::shared_ptr<BasisSet> basis() const;

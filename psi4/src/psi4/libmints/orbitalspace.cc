@@ -183,15 +183,14 @@ SharedMatrix OrbitalSpace::overlap(const OrbitalSpace &space1, const OrbitalSpac
 {
     IntegralFactory mix_ints(space1.basisset(), space2.basisset(), space1.basisset(), space2.basisset());
 
-    PetiteList p1(space1.basisset(), space1.integral());
-    PetiteList p2(space2.basisset(), space2.integral());
+    PetiteList p1(space1.basisset());
+    PetiteList p2(space2.basisset());
 
     SharedMatrix Smat(new Matrix("Overlap between space1 and space2",
                                  p1.SO_basisdim(), p2.SO_basisdim()));
 
-    OneBodySOInt *S = mix_ints.so_overlap();
+    std::unique_ptr<OneBodySOInt> S = mix_ints.so_overlap();
     S->compute(Smat);
-    delete S;
 
     return Smat;
 }
@@ -200,15 +199,14 @@ SharedMatrix OrbitalSpace::overlap(const std::shared_ptr<BasisSet> &basis1,
                                    const std::shared_ptr<BasisSet> &basis2)
 {
     IntegralFactory mix_ints(basis1, basis2, basis1, basis2);
-    SOBasisSet sobasis1(basis1, &mix_ints);
-    SOBasisSet sobasis2(basis2, &mix_ints);
+    SOBasisSet sobasis1(basis1);
+    SOBasisSet sobasis2(basis2);
 
     SharedMatrix Smat(new Matrix("Overlap between space1 and space2",
                                  sobasis1.dimension(), sobasis2.dimension()));
 
-    OneBodySOInt *S = mix_ints.so_overlap();
+    std::unique_ptr<OneBodySOInt> S = mix_ints.so_overlap();
     S->compute(Smat);
-    delete S;
 
     return Smat;
 }
@@ -220,8 +218,6 @@ void OrbitalSpace::print() const
     basis_->print_summary();
     outfile->Printf("        Dimensions: ");
     dim_.print();
-//    outfile->Printf( "        Transformation matrix:\n");
-//    C_->print();
 }
 
 namespace { // anonymous

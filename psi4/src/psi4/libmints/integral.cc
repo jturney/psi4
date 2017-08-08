@@ -28,25 +28,11 @@
 #include "psi4/libmints/integral.h"
 #include "psi4/libmints/shellrotation.h"
 #include "psi4/libmints/cartesianiter.h"
-#include "psi4/libmints/default/rel_potential.h"
-#include "psi4/libmints/default/electricfield.h"
-#include "psi4/libmints/default/tracelessquadrupole.h"
-#include "psi4/libmints/default/efpmultipolepotential.h"
-#include "psi4/libmints/default/eri.h"
-#include "psi4/libmints/default/multipoles.h"
-#include "psi4/libmints/default/quadrupole.h"
-#include "psi4/libmints/default/angularmomentum.h"
-#include "psi4/libmints/default/nabla.h"
-#include "psi4/libmints/default/dipole.h"
-#include "psi4/libmints/default/electrostatic.h"
-#include "psi4/libmints/pseudospectral.h"
-#include "psi4/libmints/default/kinetic.h"
+#include "psi4/libmints/default/pseudospectral.h"
 #include "psi4/libmints/3coverlap.h"
-#include "psi4/libmints/default/overlap.h"
 #include "psi4/psi4-dec.h"
 #include "psi4/libpsi4util/process.h"
 #include "psi4/liboptions/liboptions.h"
-#include "psi4/libmints/default/potentialint.h"
 #include "psi4/libmints/ecpint.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/liberd/erd_eri.h"
@@ -57,7 +43,8 @@
 
 #include <libint/libint.h>
 
-;
+#include "psi4/libmints/default/default_integralfactory.h"
+
 using namespace psi;
 
 IntegralFactory::IntegralFactory(std::shared_ptr<BasisSet> bs1,
@@ -65,13 +52,12 @@ IntegralFactory::IntegralFactory(std::shared_ptr<BasisSet> bs1,
                                  std::shared_ptr<BasisSet> bs3,
                                  std::shared_ptr<BasisSet> bs4)
 {
-
-    set_basis(bs1, bs2, bs3, bs4);
+    pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new DefaultIntegralFactory(bs1, bs2, bs3, bs4));
 }
 
 IntegralFactory::IntegralFactory(std::shared_ptr<BasisSet> bs1)
 {
-    set_basis(bs1, bs1, bs1, bs1);
+    pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new DefaultIntegralFactory(bs1, bs1, bs1, bs1));
 }
 
 IntegralFactory::~IntegralFactory()
@@ -81,282 +67,247 @@ IntegralFactory::~IntegralFactory()
 
 std::shared_ptr<BasisSet> IntegralFactory::basis1() const
 {
-    return bs1_;
+    return pImpl_->basis1();
 }
 
 std::shared_ptr<BasisSet> IntegralFactory::basis2() const
 {
-    return bs2_;
+    return pImpl_->basis2();
 }
 
 std::shared_ptr<BasisSet> IntegralFactory::basis3() const
 {
-    return bs3_;
+    return pImpl_->basis3();
 }
 
 std::shared_ptr<BasisSet> IntegralFactory::basis4() const
 {
-    return bs4_;
+    return pImpl_->basis4();
 }
 
 void IntegralFactory::set_basis(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
                 std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4)
 {
-    bs1_ = bs1;
-    bs2_ = bs2;
-    bs3_ = bs3;
-    bs4_ = bs4;
-
-    // Use the max am from libint
-    init_spherical_harmonics(LIBINT_MAX_AM+1);
+    pImpl_->set_basis(bs1, bs2, bs3, bs4);
 }
 
-OneBodyAOInt* IntegralFactory::ao_overlap(int deriv)
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_overlap(int deriv)
 {
-    return new OverlapInt(spherical_transforms_, bs1_, bs2_, deriv);
+    return pImpl_->ao_overlap(deriv);
 }
 
-OneBodySOInt* IntegralFactory::so_overlap(int deriv)
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_overlap(int deriv)
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_overlap(deriv));
-    return new OneBodySOInt(ao_int, this);
+    return pImpl_->so_overlap(deriv);
 }
 
-ThreeCenterOverlapInt* IntegralFactory::overlap_3c()
+std::unique_ptr<ThreeCenterOverlapInt> IntegralFactory::overlap_3c()
 {
-    return new ThreeCenterOverlapInt(spherical_transforms_, bs1_, bs2_, bs3_);
+    return pImpl_->overlap_3c();
 }
 
-OneBodyAOInt* IntegralFactory::ao_kinetic(int deriv)
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_kinetic(int deriv)
 {
-    return new KineticInt(spherical_transforms_, bs1_, bs2_, deriv);
+    return pImpl_->ao_kinetic(deriv);
 }
 
-OneBodySOInt* IntegralFactory::so_kinetic(int deriv)
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_kinetic(int deriv)
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_kinetic(deriv));
-    return new OneBodySOInt(ao_int, this);
+    return pImpl_->so_kinetic(deriv);
 }
 
-OneBodyAOInt* IntegralFactory::ao_potential(int deriv)
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_potential(int deriv)
 {
-    return new PotentialInt(spherical_transforms_, bs1_, bs2_, deriv);
+    return pImpl_->ao_potential(deriv);
 }
 
-OneBodySOInt* IntegralFactory::so_potential(int deriv)
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_potential(int deriv)
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_potential(deriv));
-    return new PotentialSOInt(ao_int, this);
+    return pImpl_->so_potential(deriv);
 }
 
-OneBodyAOInt* IntegralFactory::ao_ecp(int deriv)
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_ecp(int deriv)
 {
-    return new ECPInt(spherical_transforms_, bs1_, bs2_, deriv);
+    return pImpl_->ao_ecp(deriv);
 }
 
-OneBodySOInt* IntegralFactory::so_ecp(int deriv)
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_ecp(int deriv)
 {
-	std::shared_ptr<OneBodyAOInt> ao_int(ao_ecp(deriv));
-	return new ECPSOInt(ao_int, this);
+	return pImpl_->so_ecp(deriv);
 }
 
-OneBodyAOInt* IntegralFactory::ao_rel_potential(int deriv)
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_rel_potential(int deriv)
 {
-    return new RelPotentialInt(spherical_transforms_, bs1_, bs2_, deriv);
+    return pImpl_->ao_rel_potential(deriv);
 }
 
-OneBodySOInt* IntegralFactory::so_rel_potential(int deriv)
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_rel_potential(int deriv)
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_rel_potential(deriv));
-    return new RelPotentialSOInt(ao_int, this);
+    return pImpl_->so_rel_potential(deriv);
 }
 
-OneBodyAOInt* IntegralFactory::ao_pseudospectral(int deriv)
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_pseudospectral(int deriv)
 {
-    return new PseudospectralInt(spherical_transforms_, bs1_, bs2_, deriv);
+    return pImpl_->ao_pseudospectral(deriv);
 }
 
-OneBodySOInt* IntegralFactory::so_pseudospectral(int deriv)
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_pseudospectral(int deriv)
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_pseudospectral(deriv));
-    return new OneBodySOInt(ao_int, this);
+    return pImpl_->so_pseudospectral(deriv);
 }
 
-OneBodyAOInt* IntegralFactory::electrostatic()
+std::unique_ptr<OneBodyAOInt> IntegralFactory::electrostatic()
 {
-    return new ElectrostaticInt(spherical_transforms_, bs1_, bs2_, 0);
+    return pImpl_->electrostatic();
 }
 
-OneBodyAOInt* IntegralFactory::pcm_potentialint()
+std::unique_ptr<OneBodyAOInt> IntegralFactory::pcm_potentialint()
 {
-    return new PCMPotentialInt(spherical_transforms_, bs1_, bs2_, 0);
+    return pImpl_->pcm_potentialint();
 }
 
-OneBodyAOInt* IntegralFactory::ao_dipole(int deriv)
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_dipole(int deriv)
 {
-    return new DipoleInt(spherical_transforms_, bs1_, bs2_, deriv);
+    return pImpl_->ao_dipole(deriv);
 }
 
-OneBodySOInt* IntegralFactory::so_dipole(int deriv)
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_dipole(int deriv)
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_dipole(deriv));
-    return new OneBodySOInt(ao_int, this);
+    return pImpl_->so_dipole(deriv);
 }
 
-OneBodyAOInt* IntegralFactory::ao_nabla(int deriv)
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_nabla(int deriv)
 {
-    return new NablaInt(spherical_transforms_, bs1_, bs2_, deriv);
+    return pImpl_->ao_nabla(deriv);
 }
 
-OneBodySOInt* IntegralFactory::so_nabla(int deriv)
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_nabla(int deriv)
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_nabla(deriv));
-    return new OneBodySOInt(ao_int, this);
+    return pImpl_->so_nabla(deriv);
 }
 
-OneBodyAOInt* IntegralFactory::ao_angular_momentum(int deriv)
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_angular_momentum(int deriv)
 {
-    return new AngularMomentumInt(spherical_transforms_, bs1_, bs2_, deriv);
+    return pImpl_->ao_angular_momentum(deriv);
 }
 
-OneBodySOInt* IntegralFactory::so_angular_momentum(int deriv)
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_angular_momentum(int deriv)
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_angular_momentum(deriv));
-    return new OneBodySOInt(ao_int, this);
+    return pImpl_->so_angular_momentum(deriv);
 }
 
-OneBodyAOInt* IntegralFactory::ao_quadrupole()
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_quadrupole()
 {
-    return new QuadrupoleInt(spherical_transforms_, bs1_, bs2_);
+    return pImpl_->ao_quadrupole();
 }
 
-OneBodySOInt* IntegralFactory::so_quadrupole()
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_quadrupole()
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_quadrupole());
-    return new OneBodySOInt(ao_int, this);
+    return pImpl_->so_quadrupole();
 }
 
-OneBodyAOInt* IntegralFactory::ao_multipoles(int order)
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_multipoles(int order)
 {
-    return new MultipoleInt(spherical_transforms_, bs1_, bs2_, order);
+    return pImpl_->ao_multipoles(order);
 }
 
-OneBodyAOInt* IntegralFactory::ao_efp_multipole_potential(int order)
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_efp_multipole_potential(int order)
 {
-    return new EFPMultipolePotentialInt(spherical_transforms_, bs1_, bs2_, order);
+    return pImpl_->ao_efp_multipole_potential(order);
 }
 
-OneBodySOInt* IntegralFactory::so_efp_multipole_potential(int order)
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_efp_multipole_potential(int order)
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_efp_multipole_potential(order));
-    return new OneBodySOInt(ao_int, this);
+    return pImpl_->so_efp_multipole_potential(order);
 }
 
-OneBodySOInt* IntegralFactory::so_multipoles(int order)
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_multipoles(int order)
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_multipoles(order));
-    return new OneBodySOInt(ao_int, this);
+    return pImpl_->so_multipoles(order);
 }
 
-OneBodyAOInt* IntegralFactory::ao_traceless_quadrupole()
+std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_traceless_quadrupole()
 {
-    return new TracelessQuadrupoleInt(spherical_transforms_, bs1_, bs2_);
+    return pImpl_->ao_traceless_quadrupole();
 }
 
-OneBodySOInt* IntegralFactory::so_traceless_quadrupole()
+std::unique_ptr<OneBodySOInt> IntegralFactory::so_traceless_quadrupole()
 {
-    std::shared_ptr<OneBodyAOInt> ao_int(ao_traceless_quadrupole());
-    return new OneBodySOInt(ao_int, this);
+    return pImpl_->so_traceless_quadrupole();
 }
 
-OneBodyAOInt* IntegralFactory::electric_field()
+std::unique_ptr<OneBodyAOInt> IntegralFactory::electric_field()
 {
-    return new ElectricFieldInt(spherical_transforms_, bs1_, bs2_);
+    return pImpl_->electric_field();
 }
 
-TwoBodyAOInt* IntegralFactory::erd_eri(int deriv, bool use_shell_pairs)
+std::unique_ptr<TwoBodyAOInt> IntegralFactory::erd_eri(int deriv, bool use_shell_pairs)
 {
-#ifdef USING_simint
-    if(deriv == 0 && Process::environment.options.get_str("INTEGRAL_PACKAGE") == "SIMINT")
-        return new SimintERI(this, deriv, use_shell_pairs);
-#elif defined USING_erd
-    if(deriv == 0 && Process::environment.options.get_str("INTEGRAL_PACKAGE") == "ERD")
-        return new ERDERI(this, deriv, use_shell_pairs);
-#endif
-    return eri(deriv, use_shell_pairs);
+    return pImpl_->erd_eri(deriv, use_shell_pairs);
 }
 
-TwoBodyAOInt* IntegralFactory::eri(int deriv, bool use_shell_pairs)
+std::unique_ptr<TwoBodyAOInt> IntegralFactory::eri(int deriv, bool use_shell_pairs)
 {
-#ifdef USING_simint
-    if(deriv == 0 && Process::environment.options.get_str("INTEGRAL_PACKAGE") == "SIMINT")
-        return new SimintERI(this, deriv, use_shell_pairs);
-#elif defined USING_erd
-    if(deriv == 0 && Process::environment.options.get_str("INTEGRAL_PACKAGE") == "ERD")
-        return new ERDERI(this, deriv, use_shell_pairs);
-#endif
-    return new ERI(this, deriv, use_shell_pairs);
+    return pImpl_->eri(deriv, use_shell_pairs);
 }
 
-TwoBodyAOInt* IntegralFactory::erf_eri(double omega, int deriv, bool use_shell_pairs)
+std::unique_ptr<TwoBodyAOInt> IntegralFactory::erf_eri(double omega, int deriv, bool use_shell_pairs)
 {
-    return new ErfERI(omega, this, deriv, use_shell_pairs);
+    return pImpl_->erf_eri(omega, deriv, use_shell_pairs);
 }
 
-TwoBodyAOInt* IntegralFactory::erf_complement_eri(double omega, int deriv, bool use_shell_pairs)
+std::unique_ptr<TwoBodyAOInt> IntegralFactory::erf_complement_eri(double omega, int deriv, bool use_shell_pairs)
 {
-    return new ErfComplementERI(omega, this, deriv, use_shell_pairs);
+    return pImpl_->erf_complement_eri(omega, deriv, use_shell_pairs);
 }
 
-TwoBodyAOInt* IntegralFactory::f12(std::shared_ptr<CorrelationFactor> cf, int deriv, bool use_shell_pairs)
+std::unique_ptr<TwoBodyAOInt> IntegralFactory::f12(std::shared_ptr<CorrelationFactor> cf, int deriv, bool use_shell_pairs)
 {
-    return new F12(cf, this, deriv, use_shell_pairs);
+    return pImpl_->f12(cf, deriv, use_shell_pairs);
 }
 
-TwoBodyAOInt* IntegralFactory::f12_scaled(std::shared_ptr<CorrelationFactor> cf, int deriv, bool use_shell_pairs)
+std::unique_ptr<TwoBodyAOInt> IntegralFactory::f12_scaled(std::shared_ptr<CorrelationFactor> cf, int deriv, bool use_shell_pairs)
 {
-    return new F12Scaled(cf, this, deriv, use_shell_pairs);
+    return pImpl_->f12_scaled(cf, deriv, use_shell_pairs);
 }
 
-TwoBodyAOInt* IntegralFactory::f12_squared(std::shared_ptr<CorrelationFactor> cf, int deriv, bool use_shell_pairs)
+std::unique_ptr<TwoBodyAOInt> IntegralFactory::f12_squared(std::shared_ptr<CorrelationFactor> cf, int deriv, bool use_shell_pairs)
 {
-    return new F12Squared(cf, this, deriv, use_shell_pairs);
+    return pImpl_->f12_squared(cf, deriv, use_shell_pairs);
 }
 
-TwoBodyAOInt* IntegralFactory::f12g12(std::shared_ptr<CorrelationFactor> cf, int deriv, bool use_shell_pairs)
+std::unique_ptr<TwoBodyAOInt> IntegralFactory::f12g12(std::shared_ptr<CorrelationFactor> cf, int deriv, bool use_shell_pairs)
 {
-    return new F12G12(cf, this, deriv, use_shell_pairs);
+    return pImpl_->f12g12(cf, deriv, use_shell_pairs);
 }
 
-TwoBodyAOInt* IntegralFactory::f12_double_commutator(std::shared_ptr<CorrelationFactor> cf, int deriv, bool use_shell_pairs)
+std::unique_ptr<TwoBodyAOInt> IntegralFactory::f12_double_commutator(std::shared_ptr<CorrelationFactor> cf, int deriv, bool use_shell_pairs)
 {
-    return new F12DoubleCommutator(cf, this, deriv, use_shell_pairs);
-}
-
-void IntegralFactory::init_spherical_harmonics(int max_am)
-{
-    spherical_transforms_.clear();
-    ispherical_transforms_.clear();
-
-    for (int i=0; i<=max_am; ++i) {
-        spherical_transforms_.push_back(SphericalTransform(i));
-        ispherical_transforms_.push_back(ISphericalTransform(i));
-    }
+    return pImpl_->f12_double_commutator(cf, deriv, use_shell_pairs);
 }
 
 AOShellCombinationsIterator IntegralFactory::shells_iterator()
 {
-    return AOShellCombinationsIterator(bs1_, bs2_, bs3_, bs4_);
+    return AOShellCombinationsIterator(pImpl_->basis1(),
+                                       pImpl_->basis2(),
+                                       pImpl_->basis3(),
+                                       pImpl_->basis4());
 }
 
 AOShellCombinationsIterator* IntegralFactory::shells_iterator_ptr()
 {
-    return new AOShellCombinationsIterator(bs1_, bs2_, bs3_, bs4_);
+    return new AOShellCombinationsIterator(pImpl_->basis1(),
+                                           pImpl_->basis2(),
+                                           pImpl_->basis3(),
+                                           pImpl_->basis4());
 }
 
 AOIntegralsIterator IntegralFactory::integrals_iterator(int p, int q, int r, int s)
 {
-    return AOIntegralsIterator(bs1_->shell(p), bs2_->shell(q), bs3_->shell(r), bs4_->shell(s));
+    return AOIntegralsIterator(pImpl_->basis1()->shell(p),
+                               pImpl_->basis2()->shell(q),
+                               pImpl_->basis3()->shell(r),
+                               pImpl_->basis4()->shell(s));
 }
 
 CartesianIter* IntegralFactory::cartesian_iter(int l) const
@@ -376,7 +327,7 @@ RedundantCartesianSubIter* IntegralFactory::redundant_cartesian_sub_iter(int l) 
 
 ShellRotation IntegralFactory::shell_rotation(int am, SymmetryOperation &so, int pure) const
 {
-    ShellRotation r(am, so, this, pure);
+    ShellRotation r(am, so, pure);
     return r;
 }
 
@@ -386,7 +337,7 @@ SphericalTransformIter* IntegralFactory::spherical_transform_iter(int am, int in
         throw NOT_IMPLEMENTED_EXCEPTION();
 
     if (inv) {
-        return new SphericalTransformIter(ispherical_transforms_[am]);
+        return new SphericalTransformIter(ISphericalTransform::transforms[am]);
     }
-    return new SphericalTransformIter(spherical_transforms_[am]);
+    return new SphericalTransformIter(SphericalTransform::transforms[am]);
 }

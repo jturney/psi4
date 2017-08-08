@@ -109,10 +109,10 @@ PCM::PCM(Options &options, std::shared_ptr<PSIO> /* psio */, int nirrep, std::sh
   std::shared_ptr<IntegralFactory>
     integrals(new IntegralFactory(basisset, basisset, basisset, basisset));
 
-  PetiteList petite(basisset, integrals, true);
+  PetiteList petite(basisset, true);
   my_aotoso_ = petite.aotoso();
 
-  potential_int_ = static_cast<PCMPotentialInt*>(integrals->pcm_potentialint());
+  potential_int_ = static_cast<PCMPotentialInt*>(integrals->pcm_potentialint().release());
 
   std::shared_ptr<Molecule> molecule = basisset->molecule();
 

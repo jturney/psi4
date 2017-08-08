@@ -48,19 +48,11 @@
 
 namespace psi {
 
-OneBodySOInt::OneBodySOInt(const std::shared_ptr<OneBodyAOInt> & ob,
-                           const std::shared_ptr<IntegralFactory>& integral)
-    : ob_(ob), integral_(integral.get()), deriv_(ob->deriv())
+OneBodySOInt::OneBodySOInt(const std::shared_ptr<OneBodyAOInt> & ob)
+    : ob_(ob), deriv_(ob->deriv())
 {
     common_init();
 
-}
-
-OneBodySOInt::OneBodySOInt(const std::shared_ptr<OneBodyAOInt> & ob,
-                           const IntegralFactory* integral)
-    : ob_(ob), integral_(integral), deriv_(ob->deriv())
-{
-    common_init();
 }
 
 OneBodySOInt::~OneBodySOInt()
@@ -69,12 +61,12 @@ OneBodySOInt::~OneBodySOInt()
 
 void OneBodySOInt::common_init()
 {
-    b1_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(ob_->basis1(), integral_));
+    b1_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(ob_->basis1()));
 
     if (ob_->basis2() == ob_->basis1())
         b2_ = b1_;
     else
-        b2_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(ob_->basis2(), integral_));
+        b2_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(ob_->basis2()));
 
     ob_->set_force_cartesian(b1_->petite_list()->include_pure_transform());
 }
@@ -348,30 +340,27 @@ void OneBodySOInt::compute_deriv1(std::vector<SharedMatrix > result,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TwoBodySOInt::TwoBodySOInt(const std::shared_ptr<TwoBodyAOInt> &tb,
-                           const std::shared_ptr<IntegralFactory>& integral) :
+TwoBodySOInt::TwoBodySOInt(const std::shared_ptr<TwoBodyAOInt> &tb) :
 
-    integral_(integral), only_totally_symmetric_(false), cdsalcs_(0)
+    only_totally_symmetric_(false), cdsalcs_(0)
 {
     tb_.push_back(tb);
     common_init();
 
 }
 
-TwoBodySOInt::TwoBodySOInt(const std::vector<std::shared_ptr<TwoBodyAOInt> > &tb,
-                           const std::shared_ptr<IntegralFactory>& integral) :
+TwoBodySOInt::TwoBodySOInt(const std::vector<std::shared_ptr<TwoBodyAOInt> > &tb) :
 
-    tb_(tb), integral_(integral), only_totally_symmetric_(false), cdsalcs_(0)
+    tb_(tb), only_totally_symmetric_(false), cdsalcs_(0)
 {
     common_init();
 
 }
 
 TwoBodySOInt::TwoBodySOInt(const std::shared_ptr<TwoBodyAOInt>& tb,
-                           const std::shared_ptr<IntegralFactory>& integral,
                            const CdSalcList& cdsalcs) :
 
-    integral_(integral), only_totally_symmetric_(false), cdsalcs_(&cdsalcs)
+    only_totally_symmetric_(false), cdsalcs_(&cdsalcs)
 {
     tb_.push_back(tb);
     common_init();
@@ -379,10 +368,9 @@ TwoBodySOInt::TwoBodySOInt(const std::shared_ptr<TwoBodyAOInt>& tb,
 }
 
 TwoBodySOInt::TwoBodySOInt(const std::vector<std::shared_ptr<TwoBodyAOInt> >& tb,
-                           const std::shared_ptr<IntegralFactory>& integral,
                            const CdSalcList& cdsalcs) :
 
-    tb_(tb), integral_(integral), only_totally_symmetric_(false), cdsalcs_(&cdsalcs)
+    tb_(tb), only_totally_symmetric_(false), cdsalcs_(&cdsalcs)
 {
     common_init();
 
@@ -397,22 +385,22 @@ void TwoBodySOInt::common_init()
     me_      = 0;
 
     // Try to reduce some work:
-    b1_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(tb_[0]->basis1(), integral_));
+    b1_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(tb_[0]->basis1()));
 
     if (tb_[0]->basis1() == tb_[0]->basis2())
         b2_ = b1_;
     else
-        b2_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(tb_[0]->basis2(), integral_));
+        b2_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(tb_[0]->basis2()));
 
     if (tb_[0]->basis1() == tb_[0]->basis3())
         b3_ = b1_;
     else
-        b3_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(tb_[0]->basis3(), integral_));
+        b3_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(tb_[0]->basis3()));
 
     if (tb_[0]->basis3() == tb_[0]->basis4())
         b4_ = b3_;
     else
-        b4_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(tb_[0]->basis4(), integral_));
+        b4_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(tb_[0]->basis4()));
 
     for (int i=0; i<nthread_; ++i)
         tb_[i]->set_force_cartesian(b1_->petite_list()->include_pure_transform());

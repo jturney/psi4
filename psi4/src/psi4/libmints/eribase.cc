@@ -1789,8 +1789,10 @@ static size_t fill_primitive_data(prim_data *PrimQuartet, Fjt *fjt,
 
 } // end namespace
 
-TwoElectronInt::TwoElectronInt(const IntegralFactory *integral, int deriv, bool use_shell_pairs)
-        : TwoBodyAOInt(integral, deriv), use_shell_pairs_(use_shell_pairs)
+TwoElectronInt::TwoElectronInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                               std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                               int deriv, bool use_shell_pairs)
+        : TwoBodyAOInt(bs1, bs2, bs3, bs4, deriv), use_shell_pairs_(use_shell_pairs)
 {
     // Initialize libint static data
     init_libint_base();

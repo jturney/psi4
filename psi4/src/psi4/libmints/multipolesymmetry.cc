@@ -50,9 +50,8 @@ namespace psi{
 
 OperatorSymmetry::OperatorSymmetry(int order,
                                    std::shared_ptr<Molecule> mol,
-                                   std::shared_ptr<IntegralFactory> ints,
                                    std::shared_ptr<MatrixFactory> mats)
-    : order_(order), molecule_(mol), integral_(ints), matrix_(mats)
+    : order_(order), molecule_(mol), matrix_(mats)
 {
     common_init();
 }
@@ -81,7 +80,7 @@ void OperatorSymmetry::common_init()
             // Apply the projection
             for (int G=0; G<nirrep; ++G) {
                 SymmetryOperation so = ct.symm_operation(G);
-                ShellRotation rr(order_, so, integral_.get(), false);
+                ShellRotation rr(order_, so, false);
 
                 // rr(xyz, xyz) tells us how the orbitals transform in this
                 // symmetry operation, then we multiply by the character in
@@ -105,7 +104,7 @@ void OperatorSymmetry::common_init()
         // Angular momentum operator is a rotation operator
         // so symmetry of Lz is Lx ^ Ly which can
         // come from quadrupole
-        OperatorSymmetry quad(2, molecule_, integral_, matrix_);
+        OperatorSymmetry quad(2, molecule_, matrix_);
 
         // Make sure order is 1 for the other routines in this class.
         order_ = 1;
@@ -183,9 +182,8 @@ std::vector<SharedMatrix > OperatorSymmetry::create_matrices(const std::string &
 
 MultipoleSymmetry::MultipoleSymmetry(int order,
                                    std::shared_ptr<Molecule> mol,
-                                   std::shared_ptr<IntegralFactory> ints,
                                    std::shared_ptr<MatrixFactory> mats)
-    : order_(order), molecule_(mol), integral_(ints), matrix_(mats)
+    : order_(order), molecule_(mol), matrix_(mats)
 {
     common_init();
 }
@@ -229,7 +227,7 @@ void MultipoleSymmetry::common_init()
             // Apply the projection
             for (int G=0; G<nirrep; ++G) {
                 SymmetryOperation so = ct.symm_operation(G);
-                ShellRotation rr(l, so, integral_.get(), false);
+                ShellRotation rr(l, so, false);
 
                 // rr(xyz, xyz) tells us how the orbitals transform in this
                 // symmetry operation, then we multiply by the character in

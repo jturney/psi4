@@ -125,7 +125,9 @@ protected:
 
     void normalize_basis();
 public:
-    ERDTwoElectronInt(const IntegralFactory* integral, int deriv=0, bool use_shell_pairs=false);
+    ERDTwoElectronInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                      std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                      int deriv=0, bool use_shell_pairs=false);
     virtual ~ERDTwoElectronInt();
     void compute_scratch_size();
     virtual size_t compute_shell(const psi::AOShellCombinationsIterator&);
@@ -137,7 +139,9 @@ public:
 class ERDERI : public ERDTwoElectronInt
 {
 public:
-    ERDERI(const IntegralFactory* integral, int deriv=0, bool use_shell_pairs=false);
+    ERDERI(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+           std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+           int deriv=0, bool use_shell_pairs=false);
     virtual ~ERDERI();
 };
 

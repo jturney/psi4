@@ -138,7 +138,7 @@ void get_params(std::shared_ptr<Wavefunction> wfn, Options &options)
   std::shared_ptr<IntegralFactory> intfact = wfn->integral();
   std::shared_ptr<MatrixFactory> matfact = wfn->matrix_factory();
 
-  OperatorSymmetry dipsym(1, mol, intfact, matfact);
+  OperatorSymmetry dipsym(1, mol, matfact);
   moinfo.mu_irreps = init_int_array(3);
   moinfo.mu_irreps[0] = dipsym.component_symmetry(0);
   moinfo.mu_irreps[1] = dipsym.component_symmetry(1);
@@ -233,7 +233,7 @@ void get_params(std::shared_ptr<Wavefunction> wfn, Options &options)
   /*  Only length gauge calculations for polarizabilities */
   if (params.prop == "POLARIZABILITY")
   outfile->Printf( "\tGauge            =    LENGTH\n");
-  else { 
+  else {
   outfile->Printf( "\tGauge            =    %s\n", params.gauge.c_str());
   }
 

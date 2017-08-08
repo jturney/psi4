@@ -52,7 +52,7 @@ class ElectrostaticInt : public PotentialInt
 
 public:
     /// Constructor
-    ElectrostaticInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
+    ElectrostaticInt(std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
     ~ElectrostaticInt();
 
     // Intel C++ 12 thinks we're trying to overload the "void compute_shell(int, int)" and warns us about it.

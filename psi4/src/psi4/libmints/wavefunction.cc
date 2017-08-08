@@ -170,7 +170,7 @@ void Wavefunction::deep_copy(const Wavefunction *other)
     basisset_ = other->basisset_;
     basissets_ = other->basissets_; // Still cannot copy basissets
     integral_ = std::shared_ptr<IntegralFactory>(new IntegralFactory(basisset_, basisset_, basisset_, basisset_));
-    sobasisset_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(basisset_, integral_));
+    sobasisset_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(basisset_));
     factory_ = std::shared_ptr<MatrixFactory>(new MatrixFactory);
     factory_->init_with(other->nsopi_, other->nsopi_);
     AO2SO_ = other->AO2SO_->clone();
@@ -248,9 +248,9 @@ void Wavefunction::common_init()
 
     // Create an SO basis...we need the point group for this part.
     integral_ = std::shared_ptr<IntegralFactory>(new IntegralFactory(basisset_, basisset_, basisset_, basisset_));
-    sobasisset_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(basisset_, integral_));
+    sobasisset_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(basisset_));
 
-    std::shared_ptr<PetiteList> pet(new PetiteList(basisset_, integral_));
+    std::shared_ptr<PetiteList> pet(new PetiteList(basisset_));
     AO2SO_ = pet->aotoso();
 
     // Obtain the dimension object to initialize the factory.
@@ -394,6 +394,11 @@ void Wavefunction::initialize_singletons() {
     fac[0] = 1.0;
     for (int i = 1; i < MAX_FAC; ++i) {
         fac[i] = i * fac[i - 1];
+    }
+
+    for (int l=0; l<10; l++) {
+        SphericalTransform::transforms.push_back(SphericalTransform(l));
+        ISphericalTransform::transforms.push_back(ISphericalTransform(l));
     }
 
     done = true;
@@ -717,7 +722,7 @@ SharedMatrix Wavefunction::D_subset_helper(SharedMatrix D, SharedMatrix C, const
          * way back to Cartesian AOs.
          */
 
-        PetiteList petite(basisset_, integral_, true);
+        PetiteList petite(basisset_, true);
         SharedMatrix my_aotoso = petite.aotoso();
         double *temp = new double[my_aotoso->max_ncol() * my_aotoso->max_nrow()];
         SharedMatrix D2 = SharedMatrix(new Matrix("D (ao basis)", basisset_->nao(), basisset_->nao()));
@@ -781,7 +786,7 @@ SharedMatrix Wavefunction::basis_projection(SharedMatrix C_A, Dimension noccpi,
     std::shared_ptr<OneBodySOInt> intBB(newfactory->so_overlap());
     std::shared_ptr<OneBodySOInt> intAB(hybfactory->so_overlap());
 
-    std::shared_ptr<PetiteList> pet(new PetiteList(new_basis, newfactory));
+    std::shared_ptr<PetiteList> pet(new PetiteList(new_basis));
     SharedMatrix AO2USO(pet->aotoso());
 
     SharedMatrix SAB(new Matrix("S_AB", C_A->nirrep(), C_A->rowspi(), AO2USO->colspi()));

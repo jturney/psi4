@@ -242,7 +242,7 @@ void SAPT::initialize(SharedWavefunction MonomerA, SharedWavefunction MonomerB)
   free_block(sAJ);
 
   std::shared_ptr<PotentialInt> potA(static_cast<PotentialInt*>(
-    intfact->ao_potential()));
+    intfact->ao_potential().release()));
   SharedMatrix ZxyzA(new Matrix("Charges A (Z,x,y,z)", natomsA_, 4));
   for (int n=0, p=0; n<monomerA->natom(); n++) {
     if (monomerA->Z(n)) {
@@ -263,7 +263,7 @@ void SAPT::initialize(SharedWavefunction MonomerA, SharedWavefunction MonomerB)
   potA->compute(VAmat);
 
   std::shared_ptr<PotentialInt> potB(static_cast<PotentialInt*>(
-    intfact->ao_potential()));
+    intfact->ao_potential().release()));
   SharedMatrix ZxyzB(new Matrix("Charges B (Z,x,y,z)", natomsB_, 4));
   for (int n=0, p=0; n<monomerB->natom(); n++) {
     if (monomerB->Z(n)) {

@@ -184,7 +184,7 @@ void JK::common_init() {
 
     std::shared_ptr<IntegralFactory> integral(
         new IntegralFactory(primary_, primary_, primary_, primary_));
-    std::shared_ptr<PetiteList> pet(new PetiteList(primary_, integral));
+    std::shared_ptr<PetiteList> pet(new PetiteList(primary_));
     AO2USO_ = SharedMatrix(pet->aotoso());
 }
 size_t JK::memory_overhead() const {

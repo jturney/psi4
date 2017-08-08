@@ -64,7 +64,7 @@ class KineticInt : public OneBodyAOInt
 
 public:
     //! Constructor. Do not call directly, use an IntegralFactory.
-    KineticInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
+    KineticInt(std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
     //! Virtual destructor.
     virtual ~KineticInt();
 

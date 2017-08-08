@@ -48,7 +48,6 @@ class OperatorSymmetry
 
     // Variables we need from the user
     std::shared_ptr<Molecule> molecule_;
-    std::shared_ptr<IntegralFactory> integral_;
     std::shared_ptr<MatrixFactory> matrix_;
 
     /**
@@ -93,7 +92,6 @@ public:
      */
     OperatorSymmetry(int order,
                      std::shared_ptr<Molecule> mol,
-                     std::shared_ptr<IntegralFactory> ints,
                      std::shared_ptr<MatrixFactory> mats);
     //OperatorSymmetry(int order,
     //                 std::shared_ptr<Molecule> mol,
@@ -113,7 +111,6 @@ class MultipoleSymmetry
 
     // Variables we need from the user
     std::shared_ptr<Molecule> molecule_;
-    std::shared_ptr<IntegralFactory> integral_;
     std::shared_ptr<MatrixFactory> matrix_;
 
     /**
@@ -145,7 +142,6 @@ public:
      */
     MultipoleSymmetry(int order,
                      std::shared_ptr<Molecule> mol,
-                     std::shared_ptr<IntegralFactory> ints,
                      std::shared_ptr<MatrixFactory> mats);
     //MultipoleSymmetry(int order,
     //                 std::shared_ptr<Molecule> mol,

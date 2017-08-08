@@ -35,12 +35,11 @@
 
 using namespace psi;
 
-ThreeCenterOverlapInt::ThreeCenterOverlapInt(std::vector<SphericalTransform> st,
-                                             std::shared_ptr<BasisSet> bs1,
+ThreeCenterOverlapInt::ThreeCenterOverlapInt(std::shared_ptr<BasisSet> bs1,
                                              std::shared_ptr<BasisSet> bs2,
                                              std::shared_ptr<BasisSet> bs3)
     : overlap_recur_(bs1->max_am(), bs2->max_am(), bs3->max_am()),
-      bs1_(bs1), bs2_(bs2), bs3_(bs3), st_(st)
+      bs1_(bs1), bs2_(bs2), bs3_(bs3)
 {
     size_t size = INT_NCART(bs1->max_am()) * INT_NCART(bs2->max_am()) * INT_NCART(bs3->max_am());
 
@@ -266,9 +265,9 @@ void ThreeCenterOverlapInt::pure_transform(const GaussianShell& s1,
                                            const GaussianShell& s3)
 {
     // Get the transforms from the basis set
-    SphericalTransformIter trans1(st_[s1.am()]);
-    SphericalTransformIter trans2(st_[s2.am()]);
-    SphericalTransformIter trans3(st_[s3.am()]);
+    SphericalTransformIter trans1((SphericalTransform::transforms[s1.am()]));
+    SphericalTransformIter trans2((SphericalTransform::transforms[s2.am()]));
+    SphericalTransformIter trans3((SphericalTransform::transforms[s3.am()]));
 
     // Get number of Cartesian functions for each shell
     int nao1 = s1.ncartesian();

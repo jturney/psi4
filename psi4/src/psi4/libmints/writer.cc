@@ -125,7 +125,7 @@ void MoldenWriter::write(const std::string &filename, std::shared_ptr<Matrix> Ca
     }
 
     // Convert Ca & Cb
-    std::shared_ptr<PetiteList> pl(new PetiteList(wavefunction_->basisset(), wavefunction_->integral()));
+    std::shared_ptr<PetiteList> pl(new PetiteList(wavefunction_->basisset()));
     // get the "aotoso" transformation matrix, ao by so
     SharedMatrix aotoso = pl->aotoso();
     // need dimensions
@@ -1081,7 +1081,7 @@ void MOWriter::write()
     Vector& Ea = *wavefunction_->epsilon_a().get();
     Vector& Eb = *wavefunction_->epsilon_b().get();
 
-    std::shared_ptr<PetiteList> pl(new PetiteList(wavefunction_->basisset(), wavefunction_->integral()));
+    std::shared_ptr<PetiteList> pl(new PetiteList(wavefunction_->basisset()));
 
     // get the "aotoso" transformation matrix, ao by so
     SharedMatrix aotoso = pl->aotoso();
@@ -1232,7 +1232,7 @@ void MOWriter::write_mos(Molecule & mol){
     CharacterTable ct = mol.point_group()->char_table();
 
     BasisSet& basisset = *wavefunction_->basisset().get();
-    
+
     std::vector<std::string> ao_labels;
     for (int s = 0; s < basisset.nshell(); s++) {
         GaussianShell shell = basisset.shell(s);
@@ -1241,7 +1241,7 @@ void MOWriter::write_mos(Molecule & mol){
         char amchar = shell.amchar();
         std::string basename = mol.symbol(shell.ncenter()) + std::to_string(center) + " ";
         basename += char(amchar);
-       
+
         if (shell.is_pure()) {
             ao_labels.push_back(basename+"0");
             for (int i = 0; i < am; i++) {
@@ -1250,7 +1250,7 @@ void MOWriter::write_mos(Molecule & mol){
             }
             continue;
         }
-        
+
         for (int j = 0; j < am+1; j++) {
             int lx = am - j;
             for (int lz = 0; lz < j+1; lz++) {

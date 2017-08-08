@@ -33,8 +33,8 @@
 
 using namespace psi;
 
-MultipoleInt::MultipoleInt(std::vector<SphericalTransform>& spherical_transforms, std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, int order, int nderiv) :
-OneBodyAOInt(spherical_transforms, bs1, bs2, nderiv), mi_recur_(bs1->max_am()+2, bs2->max_am()+2, order), order_(order)
+MultipoleInt::MultipoleInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, int order, int nderiv) :
+OneBodyAOInt(bs1, bs2, nderiv), mi_recur_(bs1->max_am()+2, bs2->max_am()+2, order), order_(order)
 {
     int maxam1 = bs1_->max_am();
     int maxam2 = bs2_->max_am();

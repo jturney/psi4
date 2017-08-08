@@ -65,7 +65,7 @@ protected:
 
 public:
     /// Constructor. Assumes nuclear centers/charges as the potential
-    PotentialInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
+    PotentialInt(std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
     virtual ~PotentialInt();
 
     /// Computes the first derivatives and stores them in result

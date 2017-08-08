@@ -57,7 +57,6 @@ class OneBodyAOInt
 protected:
     std::shared_ptr<BasisSet> bs1_;
     std::shared_ptr<BasisSet> bs2_;
-    std::vector<SphericalTransform>& spherical_transforms_;
 
     Vector3 origin_;
 
@@ -76,7 +75,7 @@ protected:
 
     int buffer_size_;
 
-    OneBodyAOInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, int deriv=0);
+    OneBodyAOInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, int deriv=0);
 
     virtual void compute_pair(const GaussianShell& s1, const GaussianShell& s2) = 0;
     virtual void compute_pair_deriv1(const GaussianShell& s1, const GaussianShell& s2);

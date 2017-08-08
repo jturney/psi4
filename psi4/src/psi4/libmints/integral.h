@@ -29,11 +29,11 @@
 #ifndef _psi_src_lib_libmints_integral_h_
 #define _psi_src_lib_libmints_integral_h_
 
- #include "psi4/pragma.h"
- PRAGMA_WARNING_PUSH
- PRAGMA_WARNING_IGNORE_DEPRECATED_DECLARATIONS
- #include <memory>
- PRAGMA_WARNING_POP
+#include "psi4/pragma.h"
+PRAGMA_WARNING_PUSH
+PRAGMA_WARNING_IGNORE_DEPRECATED_DECLARATIONS
+#include <memory>
+PRAGMA_WARNING_POP
 #include <vector>
 
 #include "onebody.h"
@@ -120,6 +120,9 @@ protected:
 
     virtual void init();
 public:
+
+    static std::vector<SphericalTransform> transforms;
+
     SphericalTransform(int l, int subl = -1);
     virtual ~SphericalTransform() {}
 
@@ -149,6 +152,9 @@ protected:
     ISphericalTransform();
     virtual void init();
 public:
+
+    static std::vector<ISphericalTransform> transforms;
+
     ISphericalTransform(int l, int subl=-1);
 };
 
@@ -379,31 +385,18 @@ public:
     int s() const { return current.S; }
 };
 
-
+class DefaultIntegralFactory;
 /*! \ingroup MINTS */
 class IntegralFactory
 {
-protected:
-    /// Center 1 basis set
-    std::shared_ptr<BasisSet> bs1_;
-    /// Center 2 basis set
-    std::shared_ptr<BasisSet> bs2_;
-    /// Center 3 basis set
-    std::shared_ptr<BasisSet> bs3_;
-    /// Center 4 basis set
-    std::shared_ptr<BasisSet> bs4_;
-
-    /// Provides ability to transform to sphericals (d=0, f=1, g=2)
-    std::vector<SphericalTransform> spherical_transforms_;
-    /// Provides ability to transform from sphericals (d=0, f=1, g=2)
-    std::vector<ISphericalTransform> ispherical_transforms_;
+    std::unique_ptr<DefaultIntegralFactory> pImpl_;
 
 public:
     /** Initialize IntegralFactory object given a BasisSet for each center. */
     IntegralFactory(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
                     std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4);
     /** Initialize IntegralFactory object given a BasisSet for two centers. Becomes (bs1 bs1 | bs1 bs1). */
-    IntegralFactory(std::shared_ptr<BasisSet> bs1);
+    explicit IntegralFactory(std::shared_ptr<BasisSet> bs1);
 
     virtual ~IntegralFactory();
 
@@ -417,102 +410,102 @@ public:
     std::shared_ptr<BasisSet> basis4() const;
 
     /// Set the basis set for each center.
-    virtual void set_basis(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+    void set_basis(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
         std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4);
 
     /// Returns an OneBodyInt that computes the overlap integral.
-    virtual OneBodyAOInt* ao_overlap(int deriv=0);
+    std::unique_ptr<OneBodyAOInt> ao_overlap(int deriv=0);
 
     /// Returns an OneBodyInt that computes the overlap integral.
-    virtual OneBodySOInt* so_overlap(int deriv=0);
+    std::unique_ptr<OneBodySOInt> so_overlap(int deriv=0);
 
     /// Returns a ThreeCenterOverlapINt that computes the overlap between three centers
-    virtual ThreeCenterOverlapInt* overlap_3c();
+    std::unique_ptr<ThreeCenterOverlapInt> overlap_3c();
 
     /// Returns an OneBodyInt that computes the kinetic energy integral.
-    virtual OneBodyAOInt* ao_kinetic(int deriv=0);
-    virtual OneBodySOInt* so_kinetic(int deriv=0);
+    std::unique_ptr<OneBodyAOInt> ao_kinetic(int deriv=0);
+    std::unique_ptr<OneBodySOInt> so_kinetic(int deriv=0);
 
     /// Returns an OneBodyInt that computes the nuclear attraction integral.
-    virtual OneBodyAOInt* ao_potential(int deriv=0);
-    virtual OneBodySOInt* so_potential(int deriv=0);
-    
+    std::unique_ptr<OneBodyAOInt> ao_potential(int deriv=0);
+    std::unique_ptr<OneBodySOInt> so_potential(int deriv=0);
+
     /// Returns an OneBodyInt that computes the ECP integral.
-    virtual OneBodyAOInt* ao_ecp(int deriv=0);
-    virtual OneBodySOInt* so_ecp(int deriv=0);
+    std::unique_ptr<OneBodyAOInt> ao_ecp(int deriv=0);
+    std::unique_ptr<OneBodySOInt> so_ecp(int deriv=0);
 
     /// Returns an OneBodyInt that computes the relativistic nuclear attraction integral.
-    virtual OneBodyAOInt* ao_rel_potential(int deriv=0);
-    virtual OneBodySOInt* so_rel_potential(int deriv=0);
+    std::unique_ptr<OneBodyAOInt> ao_rel_potential(int deriv=0);
+    std::unique_ptr<OneBodySOInt> so_rel_potential(int deriv=0);
 
     /// Returns the OneBodyInt that computes the pseudospectral grid integrals
-    virtual OneBodyAOInt* ao_pseudospectral(int deriv = 0);
-    virtual OneBodySOInt* so_pseudospectral(int deriv = 0);
+    std::unique_ptr<OneBodyAOInt> ao_pseudospectral(int deriv = 0);
+    std::unique_ptr<OneBodySOInt> so_pseudospectral(int deriv = 0);
 
     /// Returns an OneBodyInt that computes the dipole integral.
-    virtual OneBodyAOInt* ao_dipole(int deriv=0);
-    virtual OneBodySOInt* so_dipole(int deriv=0);
+    std::unique_ptr<OneBodyAOInt> ao_dipole(int deriv=0);
+    std::unique_ptr<OneBodySOInt> so_dipole(int deriv=0);
 
     /// Returns an OneBodyInt that computes the quadrupole integral.
-    virtual OneBodyAOInt* ao_quadrupole();
-    virtual OneBodySOInt* so_quadrupole();
+    std::unique_ptr<OneBodyAOInt> ao_quadrupole();
+    std::unique_ptr<OneBodySOInt> so_quadrupole();
 
     /// Returns an OneBodyInt that computes arbitrary-order multipole integrals.
-    virtual OneBodyAOInt* ao_multipoles(int order);
-    virtual OneBodySOInt* so_multipoles(int order);
+    std::unique_ptr<OneBodyAOInt> ao_multipoles(int order);
+    std::unique_ptr<OneBodySOInt> so_multipoles(int order);
 
     /// Returns an OneBodyInt that computes the traceless quadrupole integral.
-    virtual OneBodyAOInt* ao_traceless_quadrupole();
-    virtual OneBodySOInt* so_traceless_quadrupole();
+    std::unique_ptr<OneBodyAOInt> ao_traceless_quadrupole();
+    std::unique_ptr<OneBodySOInt> so_traceless_quadrupole();
 
     /// Returns an OneBodyInt that computes the nabla integral.
-    virtual OneBodyAOInt* ao_nabla(int deriv=0);
-    virtual OneBodySOInt* so_nabla(int deriv=0);
+    std::unique_ptr<OneBodyAOInt> ao_nabla(int deriv=0);
+    std::unique_ptr<OneBodySOInt> so_nabla(int deriv=0);
 
     /// Returns an OneBodyInt that computes the nabla integral.
-    virtual OneBodyAOInt* ao_angular_momentum(int deriv=0);
-    virtual OneBodySOInt* so_angular_momentum(int deriv=0);
+    std::unique_ptr<OneBodyAOInt> ao_angular_momentum(int deriv=0);
+    std::unique_ptr<OneBodySOInt> so_angular_momentum(int deriv=0);
 
     /// Returns a OneBodyInt that computes the multipole potential integrals for EFP
-    virtual OneBodyAOInt* ao_efp_multipole_potential(int deriv=0);
-    virtual OneBodySOInt* so_efp_multipole_potential(int deriv=0);
+    std::unique_ptr<OneBodyAOInt> ao_efp_multipole_potential(int deriv=0);
+    std::unique_ptr<OneBodySOInt> so_efp_multipole_potential(int deriv=0);
 
     /// Returns an OneBodyInt that computes the electric field
-    virtual OneBodyAOInt *electric_field();
+    std::unique_ptr<OneBodyAOInt>electric_field();
 
     /// Returns an OneBodyInt that computes the point electrostatic potential
-    virtual OneBodyAOInt *electrostatic();
+    std::unique_ptr<OneBodyAOInt>electrostatic();
 
     /// Returns an OneBodyInt that computes the electrostatic potential at desired points
     /// Want to change the name of this after the PCM dust settles
-    virtual OneBodyAOInt *pcm_potentialint();
+    std::unique_ptr<OneBodyAOInt>pcm_potentialint();
 
     /// Returns an ERI integral object
-    virtual TwoBodyAOInt* eri(int deriv=0, bool use_shell_pairs=true);
+    std::unique_ptr<TwoBodyAOInt> eri(int deriv=0, bool use_shell_pairs=true);
 
     /// Returns an ERD ERI integral object, if available.  Otherwise returns a libint integral object
-    virtual TwoBodyAOInt* erd_eri(int deriv=0, bool use_shell_pairs=true);
+    std::unique_ptr<TwoBodyAOInt> erd_eri(int deriv=0, bool use_shell_pairs=true);
 
     /// Returns an erf ERI integral object (omega integral)
-    virtual TwoBodyAOInt* erf_eri(double omega, int deriv=0, bool use_shell_pairs=true);
+    std::unique_ptr<TwoBodyAOInt> erf_eri(double omega, int deriv=0, bool use_shell_pairs=true);
 
     /// Returns an erf complement ERI integral object (omega integral)
-    virtual TwoBodyAOInt* erf_complement_eri(double omega, int deriv=0, bool use_shell_pairs=true);
+    std::unique_ptr<TwoBodyAOInt> erf_complement_eri(double omega, int deriv=0, bool use_shell_pairs=true);
 
     /// Returns an F12 integral object
-    virtual TwoBodyAOInt* f12(std::shared_ptr<CorrelationFactor> cf, int deriv=0, bool use_shell_pairs=true);
+    std::unique_ptr<TwoBodyAOInt> f12(std::shared_ptr<CorrelationFactor> cf, int deriv=0, bool use_shell_pairs=true);
 
     /// Returns an F12Scaled integral object
-    virtual TwoBodyAOInt* f12_scaled(std::shared_ptr<CorrelationFactor> cf, int deriv=0, bool use_shell_pairs=true);
+    std::unique_ptr<TwoBodyAOInt> f12_scaled(std::shared_ptr<CorrelationFactor> cf, int deriv=0, bool use_shell_pairs=true);
 
     /// Returns an F12 squared integral object
-    virtual TwoBodyAOInt* f12_squared(std::shared_ptr<CorrelationFactor> cf, int deriv=0, bool use_shell_pairs=true);
+    std::unique_ptr<TwoBodyAOInt> f12_squared(std::shared_ptr<CorrelationFactor> cf, int deriv=0, bool use_shell_pairs=true);
 
     /// Returns an F12G12 integral object
-    virtual TwoBodyAOInt* f12g12(std::shared_ptr<CorrelationFactor> cf, int deriv=0, bool use_shell_pairs=true);
+    std::unique_ptr<TwoBodyAOInt> f12g12(std::shared_ptr<CorrelationFactor> cf, int deriv=0, bool use_shell_pairs=true);
 
     /// Returns an F12 double commutator integral object
-    virtual TwoBodyAOInt* f12_double_commutator(std::shared_ptr<CorrelationFactor> cf, int deriv=0, bool use_shell_pairs=true);
+    std::unique_ptr<TwoBodyAOInt> f12_double_commutator(std::shared_ptr<CorrelationFactor> cf, int deriv=0, bool use_shell_pairs=true);
 
     /// Returns a general ERI iterator object for any (P Q | R S) in shells
     AOIntegralsIterator integrals_iterator(int p, int q, int r, int s);
@@ -521,23 +514,20 @@ public:
     AOShellCombinationsIterator shells_iterator();
     AOShellCombinationsIterator* shells_iterator_ptr();
 
-    /// Initializes spherical harmonic transformations
-    virtual void init_spherical_harmonics(int max_am);
-
     /// Return spherical transform object for am
-    const SphericalTransform* spherical_transform(int am) const { return &(spherical_transforms_[am]); }
+//    const SphericalTransform* spherical_transform(int am) const { return &(spherical_transforms_[am]); }
 
     // Return spherical transform object for am
-    std::vector<SphericalTransform>& spherical_transform() { return spherical_transforms_; }
+//    std::vector<SphericalTransform>& spherical_transform() { return spherical_transforms_; }
 
     /// Return a spherical transform iterator object for am
     SphericalTransformIter* spherical_transform_iter(int am, int inv=0, int subl=-1) const;
 
     /// Return a new Cartesian iterator
     CartesianIter* cartesian_iter(int l) const;
-    /// Return a new rudundant Cartesian iterator
+    /// Return a new redundant Cartesian iterator
     RedundantCartesianIter* redundant_cartesian_iter(int l) const;
-    /// Return a new rudundant Cartesian sub iterator
+    /// Return a new redundant Cartesian sub iterator
     RedundantCartesianSubIter* redundant_cartesian_sub_iter(int l) const;
     /** Return the ShellRotation object for a shell of a given angular
         momentum. Pass nonzero to pure to do solid harmonics. */

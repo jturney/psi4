@@ -85,12 +85,12 @@ void FittingMetric::form_fitting_metric()
 
     // Sizing/symmetry indexing
     std::shared_ptr<IntegralFactory> auxfact(new IntegralFactory(aux_, aux_, aux_, aux_));
-    std::shared_ptr<PetiteList> auxpet(new PetiteList(aux_, auxfact));
+    std::shared_ptr<PetiteList> auxpet(new PetiteList(aux_));
     std::shared_ptr<IntegralFactory> poisfact;
     std::shared_ptr<PetiteList> poispet;
     if (is_poisson_) {
         poisfact = std::shared_ptr<IntegralFactory>(new IntegralFactory(pois_, pois_, pois_, pois_));
-        poispet = std::shared_ptr<PetiteList>(new PetiteList(pois_, poisfact));
+        poispet = std::shared_ptr<PetiteList>(new PetiteList(pois_));
     }
 
     int naux = 0;

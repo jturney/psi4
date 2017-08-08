@@ -53,7 +53,7 @@ class QuadrupoleInt : public OneBodyAOInt
     // This the work horse function.
     void compute_pair(const GaussianShell&, const GaussianShell&);
 public:
-    QuadrupoleInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>);
+    QuadrupoleInt(std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>);
     virtual ~QuadrupoleInt();
 
     static SharedVector nuclear_contribution(std::shared_ptr<Molecule> mol, const Vector3 &origin);

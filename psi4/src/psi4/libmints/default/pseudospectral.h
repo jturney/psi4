@@ -73,7 +73,7 @@ protected:
 
 public:
     /// Constructor
-    PseudospectralInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
+    PseudospectralInt(std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
     ~PseudospectralInt();
 
     /// Computes integrals between two shells.

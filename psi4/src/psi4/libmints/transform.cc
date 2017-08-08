@@ -47,6 +47,9 @@ static inline int icart(int a, int b, int c)
   return (((((a+b+c+1)<<1)-a)*(a+1))>>1)-b-1;
 }
 
+std::vector<SphericalTransform> SphericalTransform::transforms;
+std::vector<ISphericalTransform> ISphericalTransform::transforms;
+
 void SphericalTransformComponent::init(int a, int b, int c, double coef,
                                        int cartindex, int pureindex)
 {

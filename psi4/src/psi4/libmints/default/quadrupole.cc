@@ -38,8 +38,8 @@
 using namespace psi;
 
 // Initialize overlap_recur_ to +2 basis set angular momentum
-QuadrupoleInt::QuadrupoleInt(std::vector<SphericalTransform>& st, std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2) :
-    OneBodyAOInt(st, bs1, bs2), overlap_recur_(bs1->max_am()+2, bs2->max_am()+2)
+QuadrupoleInt::QuadrupoleInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2) :
+    OneBodyAOInt(bs1, bs2), overlap_recur_(bs1->max_am()+2, bs2->max_am()+2)
 {
     int maxam1 = bs1_->max_am();
     int maxam2 = bs2_->max_am();

@@ -51,7 +51,7 @@
 #include "psi4/libmints/default/eri.h"
 #include "psi4/libmints/molecule.h"
 #include "psi4/libmints/3coverlap.h"
-#include "psi4/libmints/pseudospectral.h"
+#include "psi4/libmints/default/pseudospectral.h"
 #include "psi4/libmints/oeprop.h"
 #include "psi4/libmints/default/nabla.h"
 #include "psi4/libmints/default/electrostatic.h"
@@ -1189,7 +1189,6 @@ void export_mints(py::module& m)
     py::class_<OperatorSymmetry, std::shared_ptr<OperatorSymmetry>>(m, "MultipoleSymmetry",
                                                                     "docstring")
         .def(py::init<int, const std::shared_ptr<Molecule>&,
-                      const std::shared_ptr<IntegralFactory>&,
                       const std::shared_ptr<MatrixFactory>&>())
         .def("create_matrices", &OperatorSymmetry::create_matrices, "docstring");
 

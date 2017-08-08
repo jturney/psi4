@@ -58,19 +58,11 @@ protected:
     /// Buffer for spherical harmonics
     double *temp_;
 
-    /// Vector of Sphericaltransforms
-    std::vector<SphericalTransform> st_;
-
     void compute_pair(const GaussianShell& s1,
                       const GaussianShell& s2,
                       const GaussianShell& s3);
 
 public:
-    ThreeCenterOverlapInt(std::vector<SphericalTransform> st,
-                          std::shared_ptr<BasisSet> bs1,
-                          std::shared_ptr<BasisSet> bs2,
-                          std::shared_ptr<BasisSet> bs3);
-
     ThreeCenterOverlapInt(std::shared_ptr<BasisSet> bs1,
                           std::shared_ptr<BasisSet> bs2,
                           std::shared_ptr<BasisSet> bs3);

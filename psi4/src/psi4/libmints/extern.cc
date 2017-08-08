@@ -128,7 +128,8 @@ SharedMatrix ExternalPotential::computePotentialMatrix(std::shared_ptr <BasisSet
         Zxyzp[i][3] = convfac * std::get<3>(charges_[i]);
     }
 
-    std::shared_ptr <PotentialInt> pot(static_cast<PotentialInt *>(fact->ao_potential()));
+//    std::shared_ptr <PotentialInt> pot(static_cast<PotentialInt *>(fact->ao_potential()));
+    std::unique_ptr<PotentialInt> pot(static_cast<PotentialInt*>(fact->ao_potential().release()));
     pot->set_charge_field(Zxyz);
     pot->compute(V_charge);
 
@@ -264,7 +265,7 @@ SharedMatrix ExternalPotential::computePotentialGradients(std::shared_ptr <Basis
     std::vector <std::shared_ptr<PotentialInt>> Vint;
     std::vector <SharedMatrix> Vtemps;
     for (int t = 0; t < threads; t++) {
-        Vint.push_back(std::shared_ptr<PotentialInt>(dynamic_cast<PotentialInt *>(fact->ao_potential(1))));
+        Vint.push_back(std::shared_ptr<PotentialInt>(dynamic_cast<PotentialInt *>(fact->ao_potential(1).release())));
         Vint[t]->set_charge_field(Zxyz);
         Vtemps.push_back(SharedMatrix(grad->clone()));
         Vtemps[t]->zero();
@@ -379,7 +380,7 @@ double ExternalPotential::computeNuclearEnergy(std::shared_ptr <Molecule> mol)
 
             std::shared_ptr <BasisSet> zero = BasisSet::zero_ao_basis_set();
             std::shared_ptr <IntegralFactory> fact(new IntegralFactory(aux, zero, zero, zero));
-            std::shared_ptr <PotentialInt> pot(static_cast<PotentialInt *>(fact->ao_potential()));
+            std::unique_ptr<PotentialInt> pot(static_cast<PotentialInt*>(fact->ao_potential().release()));
             pot->set_charge_field(Zxyz);
             pot->compute(V);
 

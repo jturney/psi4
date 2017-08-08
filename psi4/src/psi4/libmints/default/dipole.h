@@ -56,7 +56,7 @@ class DipoleInt : public OneBodyAOInt
 
 public:
     //! Constructor. Do not call directly use an IntegralFactory.
-    DipoleInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
+    DipoleInt(std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
     //! Virtual destructor
     virtual ~DipoleInt();
 

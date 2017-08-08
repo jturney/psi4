@@ -41,7 +41,6 @@ class OneBodySOInt
 {
 protected:
     std::shared_ptr<OneBodyAOInt> ob_;
-    const IntegralFactory* integral_;
     int deriv_;
 
     std::shared_ptr<SOBasisSet> b1_;
@@ -50,10 +49,7 @@ protected:
     void common_init();
 
 public:
-    OneBodySOInt(const std::shared_ptr<OneBodyAOInt>&,
-                 const std::shared_ptr<IntegralFactory> &);
-    OneBodySOInt(const std::shared_ptr<OneBodyAOInt>&,
-                 const IntegralFactory*);
+    OneBodySOInt(const std::shared_ptr<OneBodyAOInt>&);
     virtual ~OneBodySOInt();
 
     std::shared_ptr<SOBasisSet> basis() const;

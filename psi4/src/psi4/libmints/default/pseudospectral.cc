@@ -25,7 +25,7 @@
  *
  * @END LICENSE
  */
-#include "psi4/libmints/pseudospectral.h"
+#include "pseudospectral.h"
 #include "psi4/libmints/integral.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libciomr/libciomr.h"
@@ -37,8 +37,8 @@
 using namespace psi;
 
 // Initialize potential_recur_ to +1 basis set angular momentum
-PseudospectralInt::PseudospectralInt(std::vector<SphericalTransform>& st, std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, int deriv) :
-    OneBodyAOInt(st, bs1, bs2, deriv), potential_recur_(bs1->max_am()+1, bs2->max_am()+1),
+PseudospectralInt::PseudospectralInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, int deriv) :
+    OneBodyAOInt(bs1, bs2, deriv), potential_recur_(bs1->max_am()+1, bs2->max_am()+1),
     potential_deriv_recur_(bs1->max_am()+2, bs2->max_am()+2)
 {
     int maxam1 = bs1_->max_am();

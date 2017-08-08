@@ -59,7 +59,7 @@ class MultipoleInt : public OneBodyAOInt
     int order_;
 public:
     //! Constructor. Do not call directly. Use an IntegralFactory.
-    MultipoleInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>,
+    MultipoleInt(std::shared_ptr<BasisSet>,
                  std::shared_ptr<BasisSet>, int order, int deriv=0);
     //! Virtual destructor
     virtual ~MultipoleInt();

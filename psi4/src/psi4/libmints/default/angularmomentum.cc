@@ -40,8 +40,8 @@ using namespace psi;
 
 // Initialize overlap_recur_ to +1 basis set angular momentum, +1 on each center is sufficient
 // to compute the dipole derivatives
-AngularMomentumInt::AngularMomentumInt(std::vector<SphericalTransform>& spherical_transforms, std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, int nderiv) :
-    OneBodyAOInt(spherical_transforms, bs1, bs2, nderiv), overlap_recur_(bs1->max_am()+1, bs2->max_am()+1)
+AngularMomentumInt::AngularMomentumInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, int nderiv) :
+    OneBodyAOInt(bs1, bs2, nderiv), overlap_recur_(bs1->max_am()+1, bs2->max_am()+1)
 {
     int maxam1 = bs1_->max_am();
     int maxam2 = bs2_->max_am();

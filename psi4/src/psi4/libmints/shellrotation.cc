@@ -82,13 +82,13 @@ ShellRotation::ShellRotation(const ShellRotation& other)
     *this = other;
 }
 
-ShellRotation::ShellRotation(int a, SymmetryOperation& so, const IntegralFactory* ints, int pure) :
+ShellRotation::ShellRotation(int a, SymmetryOperation& so, int pure) :
     n_(0), am_(0), r_(0)
 {
     if (a > 0 && pure)
-        init_pure(a, so, ints);
+        init_pure(a, so);
     else
-        init(a, so, ints);
+        init(a, so);
 }
 
 ShellRotation::~ShellRotation()
@@ -126,7 +126,7 @@ void ShellRotation::done()
     n_=0;
 }
 
-void ShellRotation::init(int a, SymmetryOperation& so, const IntegralFactory* ints)
+void ShellRotation::init(int a, SymmetryOperation& so)
 {
     done();
 
@@ -140,11 +140,9 @@ void ShellRotation::init(int a, SymmetryOperation& so, const IntegralFactory* in
         return;
     }
 
-    CartesianIter* ip = ints->cartesian_iter(a);
-    RedundantCartesianIter* jp = ints->redundant_cartesian_iter(a);
+    CartesianIter I(a);
+    RedundantCartesianIter J(a);
 
-    CartesianIter& I = *ip;
-    RedundantCartesianIter& J = *jp;
     int lI[3];
     int k, iI;
 
@@ -172,15 +170,12 @@ void ShellRotation::init(int a, SymmetryOperation& so, const IntegralFactory* in
             r_[I.bfn()][J.bfn()] += tmp;
         }
     }
-
-    delete ip;
-    delete jp;
 }
 
-void ShellRotation::init_pure(int a, SymmetryOperation &so, const IntegralFactory *ints)
+void ShellRotation::init_pure(int a, SymmetryOperation &so)
 {
     if (a < 2) {
-        init(a, so, ints);
+        init(a, so);
         return;
     }
 
@@ -188,13 +183,13 @@ void ShellRotation::init_pure(int a, SymmetryOperation &so, const IntegralFactor
 
     am_=a;
 
-    SphericalTransformIter *ip = ints->spherical_transform_iter(am_);
-    SphericalTransformIter *jp = ints->spherical_transform_iter(am_, 1);
-    RedundantCartesianSubIter *kp = ints->redundant_cartesian_sub_iter(am_);
+//    SphericalTransformIter *ip = ints->spherical_transform_iter(am_);
+//    SphericalTransformIter *jp = ints->spherical_transform_iter(am_, 1);
+//    RedundantCartesianSubIter *kp = ints->redundant_cartesian_sub_iter(am_);
 
-    SphericalTransformIter& I = *ip;
-    SphericalTransformIter& J = *jp;
-    RedundantCartesianSubIter& K = *kp;
+    SphericalTransformIter I((SphericalTransform::transforms[am_]));
+    SphericalTransformIter J((ISphericalTransform::transforms[am_]));
+    RedundantCartesianSubIter K(am_);
     int lI[3];
     int m, iI;
 
@@ -238,10 +233,6 @@ void ShellRotation::init_pure(int a, SymmetryOperation &so, const IntegralFactor
             r_[I.pureindex()][J.pureindex()] += tmp;
         }
     }
-
-    delete ip;
-    delete jp;
-    delete kp;
 }
 
 ShellRotation ShellRotation::operate(const ShellRotation& rot) const

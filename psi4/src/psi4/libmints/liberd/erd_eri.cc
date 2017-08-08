@@ -70,8 +70,10 @@ void C_ERD__MEMORY_ERI_BATCH(const F_INT &nalpha, const F_INT &ncoeff,
 
 namespace psi{
 
-ERDTwoElectronInt::ERDTwoElectronInt(const IntegralFactory* integral, int deriv, bool use_shell_pairs):
-    TwoBodyAOInt(integral, deriv),
+ERDTwoElectronInt::ERDTwoElectronInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                                     std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                                     int deriv, bool use_shell_pairs):
+    TwoBodyAOInt(bs1, bs2, bs3, bs4, deriv),
     d_buffer_size_(0L),
     i_buffer_size_(0L),
     buffer_offset_(0L)
@@ -679,8 +681,10 @@ size_t ERDTwoElectronInt::compute_shell_deriv2(int, int, int, int)
     throw PSIEXCEPTION("Derivatives for ERD are NYI!");
 }
 
-ERDERI::ERDERI(const IntegralFactory *integral, int deriv, bool use_shell_pairs)
-    : ERDTwoElectronInt(integral, deriv, use_shell_pairs)
+ERDERI::ERDERI(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+               std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+               int deriv, bool use_shell_pairs)
+    : ERDTwoElectronInt(bs1, bs2, bs3, bs4, deriv, use_shell_pairs)
 {
 }
 

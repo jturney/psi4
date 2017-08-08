@@ -94,7 +94,7 @@ void Prop::set_wavefunction(std::shared_ptr<Wavefunction> wfn)
 
     integral_ = std::shared_ptr<IntegralFactory>(new IntegralFactory(basisset_,basisset_,basisset_,basisset_));
 
-    std::shared_ptr<PetiteList> pet(new PetiteList(basisset_, integral_));
+    std::shared_ptr<PetiteList> pet(new PetiteList(basisset_));
     AO2USO_ = pet->aotoso();
     factory_ = wfn_->matrix_factory();
 
@@ -825,7 +825,7 @@ void OEProp::common_init()
         // Apply the projection
         for (int G = 0; G < nirrep; ++G) {
             SymmetryOperation so = ct.symm_operation(G);
-            ShellRotation rr(1, so, integral_.get(), false);
+            ShellRotation rr(1, so, false);
 
             // rr(xyz, xyz) tells us how the orbitals transform in this
             // symmetry operation, then we multiply by the character in
@@ -916,7 +916,7 @@ void OEProp::compute_multipoles(int order, bool transition)
     SharedMatrix Db;
 
     std::vector<SharedMatrix> mp_ints;
-    MultipoleSymmetry mpsymm (order, mol, integral_, factory_);
+    MultipoleSymmetry mpsymm (order, mol, factory_);
 
     if(origin_preserves_symmetry_){
         // We can use symmetry here
@@ -1050,7 +1050,7 @@ void OEProp::compute_esp_over_grid()
 {
     std::shared_ptr<Molecule> mol = basisset_->molecule();
 
-    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic()));
+    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic().release()));
 
     outfile->Printf( "\n Electrostatic potential computed on the grid and written to grid_esp.dat\n");
 
@@ -1095,7 +1095,7 @@ void OEProp::compute_field_over_grid()
 {
     std::shared_ptr<Molecule> mol = basisset_->molecule();
 
-    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic()));
+    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic().release()));
 
     outfile->Printf( "\n Field computed on the grid and written to grid_field.dat\n");
 
@@ -1106,7 +1106,7 @@ void OEProp::compute_field_over_grid()
         Dtot->add(wfn_->D_subset_helper(Db_so_, Cb_so_, "AO"));
     }
 
-    std::shared_ptr<ElectricFieldInt> field_ints(dynamic_cast<ElectricFieldInt*>(wfn_->integral()->electric_field()));
+    std::shared_ptr<ElectricFieldInt> field_ints(dynamic_cast<ElectricFieldInt*>(wfn_->integral()->electric_field().release()));
 
     int nbf = basisset_->nbf();
     std::vector<SharedMatrix> intmats;
@@ -1147,7 +1147,7 @@ void OEProp::compute_esp_at_nuclei()
 {
     std::shared_ptr<Molecule> mol = basisset_->molecule();
 
-    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic()));
+    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic().release()));
 
     int nbf = basisset_->nbf();
     int natoms = mol->natom();
@@ -1196,7 +1196,7 @@ void OEProp::compute_dipole(bool transition)
     std::vector<SharedMatrix> dipole_ints;
     if (origin_preserves_symmetry_) {
         // Use symmetry
-        OperatorSymmetry dipsymm(1, mol, integral_, factory_);
+        OperatorSymmetry dipsymm(1, mol, factory_);
         dipole_ints = dipsymm.create_matrices("SO Dipole");
         std::shared_ptr<OneBodySOInt> sodOBI(integral_->so_dipole());
         sodOBI->ob()->set_origin(origin_);
@@ -1287,7 +1287,7 @@ void OEProp::compute_quadrupole(bool transition)
 
     std::vector<SharedMatrix> qpole_ints;
     if(origin_preserves_symmetry_){
-        OperatorSymmetry quadsymm(2, mol, integral_, factory_);
+        OperatorSymmetry quadsymm(2, mol, factory_);
         qpole_ints = quadsymm.create_matrices("SO Quadrupole");
         std::shared_ptr<OneBodySOInt> soqOBI(integral_->so_quadrupole());
         soqOBI->ob()->set_origin(origin_);

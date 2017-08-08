@@ -38,11 +38,10 @@ using namespace psi;
 ;
 
 // to compute the Nabla derivatives
-NablaInt::NablaInt(std::vector<SphericalTransform>& spherical_transforms,
-                   std::shared_ptr<BasisSet> bs1,
+NablaInt::NablaInt(std::shared_ptr<BasisSet> bs1,
                    std::shared_ptr<BasisSet> bs2,
                    int nderiv)
-    : OneBodyAOInt(spherical_transforms, bs1, bs2, nderiv), overlap_recur_(bs1->max_am()+2, bs2->max_am()+2)
+    : OneBodyAOInt(bs1, bs2, nderiv), overlap_recur_(bs1->max_am()+2, bs2->max_am()+2)
 {
     int maxam1 = bs1_->max_am();
     int maxam2 = bs2_->max_am();

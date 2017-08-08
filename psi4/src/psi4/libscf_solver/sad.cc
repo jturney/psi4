@@ -81,7 +81,7 @@ void SADGuess::common_init()
     molecule_ = basis_->molecule();
 
     std::shared_ptr<IntegralFactory> ints(new IntegralFactory(basis_));
-    std::shared_ptr<PetiteList> petite(new PetiteList(basis_,ints));
+    std::shared_ptr<PetiteList> petite(new PetiteList(basis_));
     AO2SO_ =  petite->aotoso();
 
     print_ = options_.get_int("SAD_PRINT");
@@ -332,9 +332,9 @@ void SADGuess::get_uhf_atomic_density(std::shared_ptr<BasisSet> bas, std::shared
     IntegralFactory integral(bas, bas, bas, bas);
     MatrixFactory mat;
     mat.init_with(1,&norbs,&norbs);
-    OneBodyAOInt *S_ints = integral.ao_overlap();
-    OneBodyAOInt *T_ints = integral.ao_kinetic();
-    OneBodyAOInt *V_ints = integral.ao_potential();
+    std::unique_ptr<OneBodyAOInt> S_ints = integral.ao_overlap();
+    std::unique_ptr<OneBodyAOInt> T_ints = integral.ao_kinetic();
+    std::unique_ptr<OneBodyAOInt> V_ints = integral.ao_potential();
 
     // Compute overlap S and orthogonalizer X;
     SharedMatrix S(mat.create_matrix("Overlap Matrix"));
@@ -361,9 +361,6 @@ void SADGuess::get_uhf_atomic_density(std::shared_ptr<BasisSet> bas, std::shared
 
     T.reset();
     V.reset();
-    delete S_ints;
-    delete T_ints;
-    delete V_ints;
 
     if (print_ > 6) {
         H->print();

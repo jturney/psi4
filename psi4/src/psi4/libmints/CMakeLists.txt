@@ -38,7 +38,6 @@ set(sources_list local.cc
         intvector.cc
         mintshelper.cc
         coordentry.cc
-        pseudospectral.cc
         integral.cc
         matrix.cc
         gshell.cc
@@ -50,6 +49,7 @@ set(sources_list local.cc
         gaussquad.cc
         ecpint.cc
 
+        default/default_integralfactory.cc
         default/angularmomentum.cc
         default/dipole.cc
         default/efpmultipolepotential.cc
@@ -62,6 +62,7 @@ set(sources_list local.cc
         default/overlap.cc
         default/potential.cc
         default/potentialint.cc
+        default/pseudospectral.cc
         default/quadrupole.cc
         default/rel_potential.cc
         default/tracelessquadrupole.cc

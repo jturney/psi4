@@ -37,15 +37,17 @@ using namespace psi;
 // Normal two-electron repulsion integrals
 /////////
 
-ERI::ERI(const IntegralFactory *integral, int deriv, bool use_shell_pairs)
-    : TwoElectronInt(integral, deriv, use_shell_pairs)
+ERI::ERI(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+         std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+         int deriv, bool use_shell_pairs)
+        : TwoElectronInt(bs1, bs2, bs3, bs4, deriv, use_shell_pairs)
 {
     // The +1 is needed for derivatives to work.
     fjt_ = new Taylor_Fjt(basis1()->max_am() +
                           basis2()->max_am() +
                           basis3()->max_am() +
                           basis4()->max_am() +
-                          deriv_+1, 1e-15);
+                          deriv_ + 1, 1e-15);
 }
 
 ERI::~ERI()
@@ -57,15 +59,18 @@ ERI::~ERI()
 // F12
 /////////
 
-F12::F12(std::shared_ptr<CorrelationFactor> cf, const IntegralFactory *integral, int deriv, bool use_shell_pairs)
-    : TwoElectronInt(integral, deriv, use_shell_pairs)
+F12::F12(std::shared_ptr<CorrelationFactor> cf,
+         std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+         std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+         int deriv, bool use_shell_pairs)
+        : TwoElectronInt(bs1, bs2, bs3, bs4, deriv, use_shell_pairs)
 {
     fjt_ = new F12Fundamental(cf,
                               basis1()->max_am() +
                               basis2()->max_am() +
                               basis3()->max_am() +
                               basis4()->max_am() +
-                              deriv_+1);
+                              deriv_ + 1);
 }
 
 F12::~F12()
@@ -77,15 +82,18 @@ F12::~F12()
 // F12Scaled
 /////////
 
-F12Scaled::F12Scaled(std::shared_ptr<CorrelationFactor> cf, const IntegralFactory *integral, int deriv, bool use_shell_pairs)
-    : TwoElectronInt(integral, deriv, use_shell_pairs)
+F12Scaled::F12Scaled(std::shared_ptr<CorrelationFactor> cf,
+                     std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                     std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                     int deriv, bool use_shell_pairs)
+        : TwoElectronInt(bs1, bs2, bs3, bs4, deriv, use_shell_pairs)
 {
     fjt_ = new F12ScaledFundamental(cf,
-                              basis1()->max_am() +
-                              basis2()->max_am() +
-                              basis3()->max_am() +
-                              basis4()->max_am() +
-                              deriv_+1);
+                                    basis1()->max_am() +
+                                    basis2()->max_am() +
+                                    basis3()->max_am() +
+                                    basis4()->max_am() +
+                                    deriv_ + 1);
 }
 
 F12Scaled::~F12Scaled()
@@ -97,15 +105,18 @@ F12Scaled::~F12Scaled()
 // F12 squared
 /////////
 
-F12Squared::F12Squared(std::shared_ptr<CorrelationFactor> cf, const IntegralFactory *integral, int deriv, bool use_shell_pairs)
-    : TwoElectronInt(integral, deriv, use_shell_pairs)
+F12Squared::F12Squared(std::shared_ptr<CorrelationFactor> cf,
+                       std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                       std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                       int deriv, bool use_shell_pairs)
+        : TwoElectronInt(bs1, bs2, bs3, bs4, deriv, use_shell_pairs)
 {
     fjt_ = new F12SquaredFundamental(cf,
                                      basis1()->max_am() +
                                      basis2()->max_am() +
                                      basis3()->max_am() +
                                      basis4()->max_am() +
-                                     deriv_+1);
+                                     deriv_ + 1);
 }
 
 F12Squared::~F12Squared()
@@ -117,15 +128,18 @@ F12Squared::~F12Squared()
 // F12G12
 /////////
 
-F12G12::F12G12(std::shared_ptr<CorrelationFactor> cf, const IntegralFactory *integral, int deriv, bool use_shell_pairs)
-    : TwoElectronInt(integral, deriv, use_shell_pairs)
+F12G12::F12G12(std::shared_ptr<CorrelationFactor> cf,
+               std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+               std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+               int deriv, bool use_shell_pairs)
+        : TwoElectronInt(bs1, bs2, bs3, bs4, deriv, use_shell_pairs)
 {
     fjt_ = new F12G12Fundamental(cf,
                                  basis1()->max_am() +
                                  basis2()->max_am() +
                                  basis3()->max_am() +
                                  basis4()->max_am() +
-                                 deriv_+1);
+                                 deriv_ + 1);
 }
 
 F12G12::~F12G12()
@@ -137,15 +151,18 @@ F12G12::~F12G12()
 // F12DoubleCommutator
 /////////
 
-F12DoubleCommutator::F12DoubleCommutator(std::shared_ptr<CorrelationFactor> cf, const IntegralFactory *integral, int deriv, bool use_shell_pairs)
-    : TwoElectronInt(integral, deriv, use_shell_pairs)
+F12DoubleCommutator::F12DoubleCommutator(std::shared_ptr<CorrelationFactor> cf,
+                                         const std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                                         std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                                         int deriv, bool use_shell_pairs)
+        : TwoElectronInt(bs1, bs2, bs3, bs4, deriv, use_shell_pairs)
 {
     fjt_ = new F12DoubleCommutatorFundamental(cf,
                                               basis1()->max_am() +
                                               basis2()->max_am() +
                                               basis3()->max_am() +
                                               basis4()->max_am() +
-                                              deriv_+1);
+                                              deriv_ + 1);
 }
 
 F12DoubleCommutator::~F12DoubleCommutator()
@@ -157,16 +174,19 @@ F12DoubleCommutator::~F12DoubleCommutator()
 // ErfERI
 /////////
 
-ErfERI::ErfERI(double omega, const IntegralFactory *integral, int deriv, bool use_shell_pairs)
-    : TwoElectronInt(integral, deriv, use_shell_pairs)
+ErfERI::ErfERI(double omega,
+               std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+               std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+               int deriv, bool use_shell_pairs)
+        : TwoElectronInt(bs1, bs2, bs3, bs4, deriv, use_shell_pairs)
 {
     // The +1 is needed for derivatives to work.
     fjt_ = new ErfFundamental(omega,
-                          basis1()->max_am() +
-                          basis2()->max_am() +
-                          basis3()->max_am() +
-                          basis4()->max_am() +
-                          deriv_+1);
+                              basis1()->max_am() +
+                              basis2()->max_am() +
+                              basis3()->max_am() +
+                              basis4()->max_am() +
+                              deriv_ + 1);
 }
 
 ErfERI::~ErfERI()
@@ -176,23 +196,26 @@ ErfERI::~ErfERI()
 
 void ErfERI::setOmega(double omega)
 {
-    (static_cast<ErfFundamental*>(fjt_))->setOmega(omega);
+    (dynamic_cast<ErfFundamental*>(fjt_))->setOmega(omega);
 }
 
 /////////
 // ErfComplementERI
 /////////
 
-ErfComplementERI::ErfComplementERI(double omega, const IntegralFactory *integral, int deriv, bool use_shell_pairs)
-    : TwoElectronInt(integral, deriv, use_shell_pairs)
+ErfComplementERI::ErfComplementERI(double omega,
+                                   std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                                   std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                                   int deriv, bool use_shell_pairs)
+        : TwoElectronInt(bs1, bs2, bs3, bs4, deriv, use_shell_pairs)
 {
     // The +1 is needed for derivatives to work.
     fjt_ = new ErfComplementFundamental(omega,
-                          basis1()->max_am() +
-                          basis2()->max_am() +
-                          basis3()->max_am() +
-                          basis4()->max_am() +
-                          deriv_+1);
+                                        basis1()->max_am() +
+                                        basis2()->max_am() +
+                                        basis3()->max_am() +
+                                        basis4()->max_am() +
+                                        deriv_ + 1);
 }
 
 ErfComplementERI::~ErfComplementERI()

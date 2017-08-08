@@ -106,7 +106,7 @@ void X2CInt::setup(std::shared_ptr<BasisSet> basis,
 
     // Create an SO basis...we need the point group for this part.
     // SOBasisSet object for the computational basis
-    std::shared_ptr<SOBasisSet> soBasis(new SOBasisSet(aoBasis_, integral_));
+    std::shared_ptr<SOBasisSet> soBasis(new SOBasisSet(aoBasis_));
 
     // Obtain the dimension object to initialize the factory.
     nsopi_ = soBasis->dimension();
@@ -435,7 +435,7 @@ void X2CInt::project()
     // Integral factory for the BASIS/X2C_BASIS mixed basis
     std::shared_ptr<IntegralFactory> integral_contracted(new IntegralFactory(aoBasis_contracted_, aoBasis_, aoBasis_, aoBasis_));
 
-    std::shared_ptr<SOBasisSet> soBasis_contracted(new SOBasisSet(aoBasis_contracted_, integral_contracted));
+    std::shared_ptr<SOBasisSet> soBasis_contracted(new SOBasisSet(aoBasis_contracted_));
 
     nsopi_contracted_ = soBasis_contracted->dimension();
 

@@ -61,8 +61,6 @@ class GaussianShell;
 class TwoBodyAOInt
 {
 protected:
-    const IntegralFactory* integral_;
-
     const std::shared_ptr<BasisSet> original_bs1_;
     const std::shared_ptr<BasisSet> original_bs2_;
     const std::shared_ptr<BasisSet> original_bs3_;
@@ -123,7 +121,9 @@ protected:
 //               std::shared_ptr<BasisSet> bs4,
 //               int deriv = 0);
 
-    TwoBodyAOInt(const IntegralFactory* intsfactory, int deriv=0);
+    TwoBodyAOInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                 std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                 int deriv=0);
 
     TwoBodyAOInt(const TwoBodyAOInt & rhs);
 
@@ -150,9 +150,6 @@ public:
     /// Buffer where the integrals are placed
     const double *buffer() const { return target_full_; }
 
-    /// Returns the integral factory used to create this object
-    const IntegralFactory* integral() const { return integral_; }
-
     /// Compute ERIs between 4 shells. Result is stored in buffer.
     virtual size_t compute_shell(const AOShellCombinationsIterator&) = 0;
 
@@ -167,7 +164,7 @@ public:
 
 
     /*! Compute integrals for two blocks
-     * 
+     *
      * The indices \p shellpair12 and \p shellpair34 refer to the indices
      * in the vectors returned by get_blocks12() and get_blocks34(),
      * respectively.
@@ -178,8 +175,7 @@ public:
      * triangular parts, for example.  A value of -1 means to calculate
      * all that are part of the shell pair batch.
      */
-    virtual void
-    compute_shell_blocks(int shellpair12, int shellpair34,
+    virtual void compute_shell_blocks(int shellpair12, int shellpair34,
                          int npair12 = -1, int npair34 = -1);
 
     /// Is the shell zero?

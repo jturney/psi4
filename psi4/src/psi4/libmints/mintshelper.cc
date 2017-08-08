@@ -182,7 +182,7 @@ void MintsHelper::common_init()
     integral_ = std::shared_ptr<IntegralFactory>(new IntegralFactory(basisset_));
 
     // Get the SO basis object.
-    sobasis_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(basisset_, integral_));
+    sobasis_ = std::shared_ptr<SOBasisSet>(new SOBasisSet(basisset_));
 
     // Obtain dimensions from the sobasis
     const Dimension dimension = sobasis_->dimension();
@@ -197,13 +197,13 @@ void MintsHelper::common_init()
 
 std::shared_ptr <PetiteList> MintsHelper::petite_list() const
 {
-    std::shared_ptr <PetiteList> pt(new PetiteList(basisset_, integral_));
+    std::shared_ptr <PetiteList> pt(new PetiteList(basisset_));
     return pt;
 }
 
 std::shared_ptr <PetiteList> MintsHelper::petite_list(bool val) const
 {
-    std::shared_ptr <PetiteList> pt(new PetiteList(basisset_, integral_, val));
+    std::shared_ptr <PetiteList> pt(new PetiteList(basisset_, val));
     return pt;
 }
 
@@ -240,7 +240,7 @@ void MintsHelper::integrals()
     std::vector <std::shared_ptr<TwoBodyAOInt>> tb;
     for (int i = 0; i < nthread_; ++i)
         tb.push_back(std::shared_ptr<TwoBodyAOInt>(integral_->eri()));
-    std::shared_ptr <TwoBodySOInt> eri(new TwoBodySOInt(tb, integral_));
+    std::shared_ptr <TwoBodySOInt> eri(new TwoBodySOInt(tb));
 
     //// Print out some useful information
     if (print_) {
@@ -301,7 +301,7 @@ void MintsHelper::integrals_erf(double w)
     std::vector <std::shared_ptr<TwoBodyAOInt>> tb;
     for (int i = 0; i < nthread_; ++i)
         tb.push_back(std::shared_ptr<TwoBodyAOInt>(integral_->erf_eri(omega)));
-    std::shared_ptr <TwoBodySOInt> erf(new TwoBodySOInt(tb, integral_));
+    std::shared_ptr <TwoBodySOInt> erf(new TwoBodySOInt(tb));
 
     // Let the user know what we're doing.
     outfile->Printf("      Computing non-zero ERF integrals (omega = %.3f)...", omega);
@@ -333,7 +333,7 @@ void MintsHelper::integrals_erfc(double w)
     std::vector <std::shared_ptr<TwoBodyAOInt>> tb;
     for (int i = 0; i < nthread_; ++i)
         tb.push_back(std::shared_ptr<TwoBodyAOInt>(integral_->erf_complement_eri(omega)));
-    std::shared_ptr <TwoBodySOInt> erf(new TwoBodySOInt(tb, integral_));
+    std::shared_ptr <TwoBodySOInt> erf(new TwoBodySOInt(tb));
 
     // Let the user know what we're doing.
     outfile->Printf("      Computing non-zero ERFComplement integrals...");
@@ -886,11 +886,7 @@ SharedMatrix MintsHelper::ao_3coverlap_helper(const std::string &label, std::sha
 }
 SharedMatrix MintsHelper::ao_3coverlap()
 {
-    std::vector<SphericalTransform> trans;
-    for (int i = 0; i <= basisset_->max_am(); i++) {
-        trans.push_back(SphericalTransform(i));
-    }
-    std::shared_ptr<ThreeCenterOverlapInt> ints(new ThreeCenterOverlapInt(trans, basisset_, basisset_, basisset_));
+    std::shared_ptr<ThreeCenterOverlapInt> ints(new ThreeCenterOverlapInt(basisset_, basisset_, basisset_));
     return ao_3coverlap_helper("AO 3-Center Overlap Tensor", ints);
 }
 
@@ -899,11 +895,7 @@ SharedMatrix MintsHelper::ao_3coverlap(std::shared_ptr<BasisSet> bs1,
                                        std::shared_ptr<BasisSet> bs3)
 {
     int max_am = std::max(std::max(bs1->max_am(), bs2->max_am()), bs3->max_am());
-    std::vector<SphericalTransform> trans;
-    for (int i = 0; i <= max_am ; i++) {
-        trans.push_back(SphericalTransform(i));
-    }
-    std::shared_ptr<ThreeCenterOverlapInt> ints(new ThreeCenterOverlapInt(trans, bs1, bs2, bs3));
+    std::shared_ptr<ThreeCenterOverlapInt> ints(new ThreeCenterOverlapInt(bs1, bs2, bs3));
     return ao_3coverlap_helper("AO 3-Center Overlap Tensor", ints);
 }
 
@@ -1251,9 +1243,9 @@ SharedMatrix MintsHelper::so_potential(bool include_perturbations)
                 outfile->Printf("  MintsHelper doesn't understand the requested perturbation, might be done in SCF.");
             }
 
-            OperatorSymmetry msymm(1, molecule_, integral_, factory_);
+            OperatorSymmetry msymm(1, molecule_, factory_);
             std::vector <SharedMatrix> dipoles = msymm.create_matrices("Dipole");
-            OneBodySOInt *so_dipole = integral_->so_dipole();
+            std::unique_ptr<OneBodySOInt> so_dipole = integral_->so_dipole();
             so_dipole->compute(dipoles);
 
             if (lambda[0] != 0.0) {
@@ -1301,7 +1293,7 @@ SharedMatrix MintsHelper::so_potential(bool include_perturbations)
 std::vector <SharedMatrix> MintsHelper::so_dipole()
 {
     // The matrix factory can create matrices of the correct dimensions...
-    OperatorSymmetry msymm(1, molecule_, integral_, factory_);
+    OperatorSymmetry msymm(1, molecule_, factory_);
     // Create a vector of matrices with the proper symmetry
     std::vector <SharedMatrix> dipole = msymm.create_matrices("SO Dipole");
 
@@ -1314,7 +1306,7 @@ std::vector <SharedMatrix> MintsHelper::so_dipole()
 std::vector <SharedMatrix> MintsHelper::so_quadrupole()
 {
     // The matrix factory can create matrices of the correct dimensions...
-    OperatorSymmetry msymm(2, molecule_, integral_, factory_);
+    OperatorSymmetry msymm(2, molecule_, factory_);
     // Create a vector of matrices with the proper symmetry
     std::vector <SharedMatrix> quadrupole = msymm.create_matrices("SO Quadrupole");
 
@@ -1327,7 +1319,7 @@ std::vector <SharedMatrix> MintsHelper::so_quadrupole()
 std::vector <SharedMatrix> MintsHelper::so_traceless_quadrupole()
 {
     // The matrix factory can create matrices of the correct dimensions...
-    OperatorSymmetry msymm(2, molecule_, integral_, factory_);
+    OperatorSymmetry msymm(2, molecule_, factory_);
     // Create a vector of matrices with the proper symmetry
     std::vector <SharedMatrix> quadrupole = msymm.create_matrices("SO Traceless Quadrupole");
 
@@ -1340,7 +1332,7 @@ std::vector <SharedMatrix> MintsHelper::so_traceless_quadrupole()
 std::vector <SharedMatrix> MintsHelper::so_nabla()
 {
     // The matrix factory can create matrices of the correct dimensions...
-    OperatorSymmetry msymm(OperatorSymmetry::P, molecule_, integral_, factory_);
+    OperatorSymmetry msymm(OperatorSymmetry::P, molecule_, factory_);
     // Create a vector of matrices with the proper symmetry
     std::vector <SharedMatrix> nabla = msymm.create_matrices("SO Nabla");
 
@@ -1353,7 +1345,7 @@ std::vector <SharedMatrix> MintsHelper::so_nabla()
 std::vector <SharedMatrix> MintsHelper::so_angular_momentum()
 {
     // The matrix factory can create matrices of the correct dimensions...
-    OperatorSymmetry msymm(OperatorSymmetry::L, molecule_, integral_, factory_);
+    OperatorSymmetry msymm(OperatorSymmetry::L, molecule_, factory_);
     // Create a vector of matrices with the proper symmetry
     std::vector <SharedMatrix> am = msymm.create_matrices("SO Angular Momentum");
 

@@ -77,8 +77,8 @@ static void transform1e_2(int am, SphericalTransformIter &sti, double *s, double
 }
 } // namespace anonmyous
 
-OneBodyAOInt::OneBodyAOInt(std::vector <SphericalTransform> &spherical_transforms, std::shared_ptr <BasisSet> bs1, std::shared_ptr <BasisSet> bs2, int deriv)
-        : bs1_(bs1), bs2_(bs2), spherical_transforms_(spherical_transforms), deriv_(deriv), nchunk_(1)
+OneBodyAOInt::OneBodyAOInt(std::shared_ptr <BasisSet> bs1, std::shared_ptr <BasisSet> bs2, int deriv)
+        : bs1_(bs1), bs2_(bs2), deriv_(deriv), nchunk_(1)
 {
     force_cartesian_ = false;
     buffer_ = 0;
@@ -202,11 +202,11 @@ void OneBodyAOInt::pure_transform(const GaussianShell &s1,
         }
 
         if (is_pure2) {
-            SphericalTransformIter stiter(spherical_transforms_[am2]);
+            SphericalTransformIter stiter(SphericalTransform::transforms[am2]);
             transform1e_2(am2, stiter, source2, target2, ncart1, ncart2);
         }
         if (is_pure1) {
-            SphericalTransformIter stiter(spherical_transforms_[am1]);
+            SphericalTransformIter stiter(SphericalTransform::transforms[am1]);
             transform1e_1(am1, stiter, source1, target1, nbf2);
         }
 

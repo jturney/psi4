@@ -208,7 +208,7 @@ void RCPHF::analyze_named_tasks()
 }
 void RCPHF::add_polarizability()
 {
-    OperatorSymmetry msymm(1, molecule_, integral_, factory_);
+    OperatorSymmetry msymm(1, molecule_, factory_);
     std::vector<SharedMatrix> dipole = msymm.create_matrices("SO Dipole");
     std::shared_ptr<OneBodySOInt> ints(integral_->so_dipole());
     ints->compute(dipole);

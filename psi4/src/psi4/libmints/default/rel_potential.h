@@ -68,7 +68,7 @@ protected:
 
 public:
     /// Constructor. Assumes nuclear centers/charges as the potential
-    RelPotentialInt(std::vector<SphericalTransform>&, std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
+    RelPotentialInt(std::shared_ptr<BasisSet>, std::shared_ptr<BasisSet>, int deriv=0);
     virtual ~RelPotentialInt();
 
     /// Computes the first derivatives and stores them in result
@@ -91,8 +91,7 @@ class RelPotentialSOInt : public OneBodySOInt
 {
     int natom_;
 public:
-    RelPotentialSOInt(const std::shared_ptr<OneBodyAOInt>& , const std::shared_ptr<IntegralFactory> &);
-    RelPotentialSOInt(const std::shared_ptr<OneBodyAOInt>& , const IntegralFactory*);
+    RelPotentialSOInt(const std::shared_ptr<OneBodyAOInt>&);
 
     /**
      * Computes one-electron integral derivative matrices.

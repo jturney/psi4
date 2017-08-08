@@ -129,14 +129,8 @@ void SOTransformShell::add_func(int irrep, double coef, int aofunc, int sofunc)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-SOBasisSet::SOBasisSet(const std::shared_ptr<BasisSet> &basis, const IntegralFactory *integral)
-    : basis_(basis), integral_(integral)
-{
-    init();
-}
-
-SOBasisSet::SOBasisSet(const std::shared_ptr<BasisSet> &basis, const std::shared_ptr<IntegralFactory> &integral)
-    : basis_(basis), integral_(integral.get())
+SOBasisSet::SOBasisSet(const std::shared_ptr<BasisSet> &basis)
+    : basis_(basis)
 {
     init();
 }
@@ -213,7 +207,7 @@ void SOBasisSet::init()
 
     bool include_pure_transform = true;
 
-    petite_ = std::shared_ptr<PetiteList>(new PetiteList(basis_, integral_, include_pure_transform));
+    petite_ = std::shared_ptr<PetiteList>(new PetiteList(basis_, include_pure_transform));
 
 //    petite_->print();
 
@@ -481,7 +475,7 @@ std::shared_ptr<BasisSet> SOBasisSet::basis() const
 
 Dimension SOBasisSet::dimension() const
 {
-    std::shared_ptr<PetiteList> petite = std::shared_ptr<PetiteList>(new PetiteList(basis_, integral_));
+    std::shared_ptr<PetiteList> petite = std::shared_ptr<PetiteList>(new PetiteList(basis_));
     return petite->SO_basisdim();
 }
 

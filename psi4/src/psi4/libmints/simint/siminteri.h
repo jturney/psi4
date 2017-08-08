@@ -42,7 +42,9 @@ class SimintTwoElectronInt : public TwoBodyAOInt
         typedef std::vector<simint_multi_shellpair> ShellPairVec;
         typedef std::vector<simint_shell> ShellVec;
 
-        SimintTwoElectronInt(const IntegralFactory * integral, int deriv=0, bool use_shell_pairs=false);
+        SimintTwoElectronInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                             std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                             int deriv=0, bool use_shell_pairs=false);
         virtual ~SimintTwoElectronInt();
 
         virtual size_t compute_shell(const AOShellCombinationsIterator&) override;
@@ -53,9 +55,9 @@ class SimintTwoElectronInt : public TwoBodyAOInt
         compute_shell_blocks(int shellpair1, int shellpair2,
                              int npair1 = -1, int npair2 = -1) override;
 
-        virtual size_t compute_shell_deriv1(int, int, int, int);
+        virtual size_t compute_shell_deriv1(int, int, int, int) override;
 
-        virtual size_t compute_shell_deriv2(int, int, int, int);
+        virtual size_t compute_shell_deriv2(int, int, int, int) override;
 
     protected:
         SimintTwoElectronInt(const SimintTwoElectronInt & rhs);
@@ -99,7 +101,9 @@ class SimintERI : public SimintTwoElectronInt
         virtual bool cloneable() const override { return true; };
         virtual SimintERI * clone() const override { return new SimintERI(*this); }
 
-        SimintERI(const IntegralFactory * integral, int deriv=0, bool use_shell_pairs=false);
+        SimintERI(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                  std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                  int deriv=0, bool use_shell_pairs=false);
 };
 
 

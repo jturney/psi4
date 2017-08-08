@@ -159,8 +159,10 @@ create_shared_multi_shellpair_(const std::vector<ShellPairBlock> & vsh,
 // Actual class code starts here
 ////////////////////////////////////////////////
 
-SimintTwoElectronInt::SimintTwoElectronInt(const IntegralFactory * integral, int deriv, bool use_shell_pairs)
-    : TwoBodyAOInt(integral, deriv)
+SimintTwoElectronInt::SimintTwoElectronInt(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                                           std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                                           int deriv, bool use_shell_pairs)
+    : TwoBodyAOInt(bs1, bs2, bs3, bs4, deriv)
 {
     maxam_ = std::max( std::max(basis1()->max_am(), basis2()->max_am()),
                        std::max(basis3()->max_am(), basis4()->max_am()) );
@@ -524,8 +526,10 @@ void SimintTwoElectronInt::create_blocks(void)
 
 }
 
-SimintERI::SimintERI(const IntegralFactory *integral, int deriv, bool use_shell_pairs)
-    : SimintTwoElectronInt(integral, deriv, use_shell_pairs)
+SimintERI::SimintERI(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
+                     std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4,
+                     int deriv, bool use_shell_pairs)
+    : SimintTwoElectronInt(bs1, bs2, bs3, bs4, deriv, use_shell_pairs)
 { }
 
 SimintERI::SimintERI(const SimintERI & rhs)

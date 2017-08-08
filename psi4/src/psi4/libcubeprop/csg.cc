@@ -468,7 +468,7 @@ void CubicScalarGrid::add_esp(double* v, std::shared_ptr<Matrix> D, const std::v
     for (int thread = 0; thread < nthreads; thread++) {
         ZxyzT.push_back(std::shared_ptr<Matrix>(new Matrix("Zxyz",1,4)));
         VtempT.push_back(std::shared_ptr<Matrix>(new Matrix("Vtemp",naux,1)));
-        VintT.push_back(std::shared_ptr<PotentialInt>(static_cast<PotentialInt*>(Vfact->ao_potential())));
+        VintT.push_back(std::shared_ptr<PotentialInt>(static_cast<PotentialInt*>(Vfact->ao_potential().release())));
         VintT[thread]->set_charge_field(ZxyzT[thread]);
     }
 
