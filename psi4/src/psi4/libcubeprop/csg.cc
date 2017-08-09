@@ -38,7 +38,7 @@
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/vector.h"
 #include "psi4/libmints/integral.h"
-#include "psi4/libmints/potential.h"
+#include "psi4/libmints/default/potential.h"
 #include "psi4/libfilesystem/path.h"
 #include "psi4/libpsi4util/PsiOutStream.h"
 #include "psi4/liboptions/liboptions.h"

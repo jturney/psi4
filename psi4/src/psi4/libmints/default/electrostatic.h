@@ -29,7 +29,7 @@
 #ifndef _psi_src_lib_libmints_electrostatic_h_
 #define _psi_src_lib_libmints_electrostatic_h_
 
-#include "psi4/libmints/potential.h"
+#include "psi4/libmints/default/potential.h"
 #include "psi4/pragma.h"
 
 namespace psi {

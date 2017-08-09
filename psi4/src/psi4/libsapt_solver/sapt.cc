@@ -32,7 +32,7 @@
 #include "psi4/libmints/factory.h"
 #include "psi4/libmints/molecule.h"
 #include "psi4/libmints/integral.h"
-#include "psi4/libmints/potential.h"
+#include "psi4/libmints/default/potential.h"
 #include "psi4/libmints/basisset.h"
 
 #include <cstring>

@@ -40,7 +40,7 @@
 #include "psi4/libmints/matrix.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/molecule.h"
-#include "psi4/libmints/potential.h"
+#include "psi4/libmints/default/potential.h"
 #include "psi4/libmints/integral.h"
 #include "psi4/liboptions/liboptions.h"
 #include "psi4/libcubeprop/csg.h"

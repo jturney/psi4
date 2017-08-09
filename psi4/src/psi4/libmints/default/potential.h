@@ -94,8 +94,7 @@ class PotentialSOInt : public OneBodySOInt
 {
     int natom_;
 public:
-    PotentialSOInt(const std::shared_ptr<OneBodyAOInt>& , const std::shared_ptr<IntegralFactory> &);
-    PotentialSOInt(const std::shared_ptr<OneBodyAOInt>& , const IntegralFactory*);
+    PotentialSOInt(const std::shared_ptr<OneBodyAOInt>&);
 
     /**
      * Computes one-electron integral derivative matrices.

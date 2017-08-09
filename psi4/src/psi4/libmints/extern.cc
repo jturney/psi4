@@ -31,7 +31,7 @@
 #include "psi4/libmints/vector.h"
 #include "psi4/libmints/matrix.h"
 #include "psi4/libmints/integral.h"
-#include "psi4/libmints/potential.h"
+#include "psi4/libmints/default/potential.h"
 #include "psi4/libciomr/libciomr.h"
 #include "psi4/libqt/qt.h"
 #include "psi4/physconst.h"

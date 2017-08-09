@@ -31,7 +31,7 @@
 #include "psi4/libmints/ecpint.h"
 #include "psi4/libmints/gshell.h"
 #include "psi4/libmints/wavefunction.h"
-#include "psi4/libmints/potential.h"
+#include "psi4/libmints/default/potential.h"
 #include "psi4/libmints/integral.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/matrix.h"

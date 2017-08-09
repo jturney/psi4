@@ -55,7 +55,7 @@
 #include "psi4/libmints/oeprop.h"
 #include "psi4/libmints/default/nabla.h"
 #include "psi4/libmints/default/electrostatic.h"
-#include "psi4/libmints/potential.h"
+#include "psi4/libmints/default/potential.h"
 #include "psi4/libmints/default/kinetic.h"
 #include "psi4/libmints/factory.h"
 #include "psi4/libmints/writer.h"

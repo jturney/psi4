@@ -28,7 +28,7 @@
 
 #include "psi4/libciomr/libciomr.h"
 #include "psi4/libmints/cdsalclist.h"
-#include "psi4/libmints/potential.h"
+#include "psi4/libmints/default/potential.h"
 #include "psi4/libmints/integral.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/matrix.h"
