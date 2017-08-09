@@ -1,18 +1,18 @@
-set(LIBCINT_VER "2.8")
+set(CINT_VER "2.8")
 
-if (${ENABLE_libcint})
-    find_package(libcint ${LIBCINT_VER} CONFIG QUIET)
+if (${ENABLE_cint})
+    find_package(cint ${LIBCINT_VER} CONFIG QUIET)
 
-    if (${libcint_FOUND})
-        get_property(_loc TARGET libcint::libcint PROPERTY LOCATION)
-        message(STATUS "${Cyab}Found libcint${ColourReset}: ${_loc} (found version ${libcint_VERSION})")
-        add_library(libcint_external INTERFACE)
+    if (${cint_FOUND})
+        get_property(_loc TARGET cint::cint PROPERTY LOCATION)
+        message(STATUS "${Cyab}Found libcint${ColourReset}: ${_loc} (found version ${cint_VERSION})")
+        add_library(cint_external INTERFACE)
     else ()
         include(ExternalProject)
-        message(STATUS "Suitable libcint could not be located, ${Magenta}Building libcint${ColourReset} instead.")
-        ExternalProject_Add(libcint_external
+        message(STATUS "Suitable cint could not be located, ${Magenta}Building libcint${ColourReset} instead.")
+        ExternalProject_Add(cint_external
             GIT_REPOSITORY https://github.com/jturney/libcint
-            GIT_TAG master
+            GIT_TAG updates
             UPDATE_COMMAND ""
             CMAKE_ARGS 
                 -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
