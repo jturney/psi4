@@ -33,7 +33,7 @@
 #include "psi4/libmints/default/eri.h"      // TODO: Remove this dependency
 #include "psi4/libmints/integral.h"
 #include "psi4/libmints/basisset.h"
-#include "psi4/libmints/fjt.h"
+#include "psi4/libmints/default/fjt.h"
 #include "psi4/libmints/wavefunction.h"
 #include "psi4/libpsi4util/PsiOutStream.h"
 

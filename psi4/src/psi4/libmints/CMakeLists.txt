@@ -19,7 +19,7 @@ set(sources_list local.cc
         wavefunction.cc
         irrep.cc
         eribase.cc
-        fjt.cc
+        default/fjt.cc
         chartab.cc
         corrtab.cc
         symop.cc

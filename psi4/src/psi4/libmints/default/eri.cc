@@ -29,7 +29,7 @@
 #include "psi4/libmints/default/eri.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/integral.h"
-#include "psi4/libmints/fjt.h"
+#include "fjt.h"
 
 using namespace psi;
 
