@@ -44,7 +44,7 @@
 #include "psi4/libmints/default/overlap.h"
 #include "psi4/libpsi4util/process.h"
 #include "psi4/libmints/default/potentialint.h"
-#include "psi4/libmints/ecpint.h"
+#include "ecpint.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/liberd/erd_eri.h"
 

@@ -28,7 +28,7 @@
 
 /* Implements ecpint.hpp */
 
-#include "psi4/libmints/ecpint.h"
+#include "ecpint.h"
 #include "psi4/libmints/gshell.h"
 #include "psi4/libmints/wavefunction.h"
 #include "psi4/libmints/default/potential.h"

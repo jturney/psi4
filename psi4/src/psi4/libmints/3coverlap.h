@@ -84,11 +84,6 @@ public:
     /// Compute the integrals of the form (a|c|b).
     virtual void compute_shell(int, int, int);
 
-    /// Normalize Cartesian functions based on angular momentum
-    void normalize_am(const GaussianShell&,
-                      const GaussianShell&,
-                      const GaussianShell&);
-
     /// Perform pure (spherical) transform.
     void pure_transform(const GaussianShell&,
                         const GaussianShell&,

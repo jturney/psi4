@@ -45,9 +45,6 @@ set(sources_list local.cc
         pointgrp.cc
         rep.cc
         cdsalclist.cc
-        bessel.cc
-        gaussquad.cc
-        ecpint.cc
 
         default/default_integralfactory.cc
         default/angularmomentum.cc
@@ -67,6 +64,9 @@ set(sources_list local.cc
         default/rel_potential.cc
         default/tracelessquadrupole.cc
         default/x2cint.cc
+        default/bessel.cc
+        default/gaussquad.cc
+        default/ecpint.cc
 
         liberd/erd_eri.cc
         )

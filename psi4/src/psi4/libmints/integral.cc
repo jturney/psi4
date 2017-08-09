@@ -33,7 +33,7 @@
 #include "psi4/psi4-dec.h"
 #include "psi4/libpsi4util/process.h"
 #include "psi4/liboptions/liboptions.h"
-#include "psi4/libmints/ecpint.h"
+#include "psi4/libmints/default/ecpint.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/liberd/erd_eri.h"
 
