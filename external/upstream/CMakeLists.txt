@@ -9,6 +9,7 @@ foreach(dir ambit
             pybind11
             simint
             libxc
+            libcint
 )
    add_subdirectory(${dir})
 endforeach()
