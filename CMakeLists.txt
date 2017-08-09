@@ -71,6 +71,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 ############################  Options: Build What?  ############################
 option(ENABLE_ambit "Enables the ambit tensor library" OFF)
 option(ENABLE_CheMPS2 "Enables CheMPS2 for DMRG (requires HDF5)" OFF)
+option(ENABLE_cint "Enables cint integral library" OFF)
 option(ENABLE_dkh "Enables DKH integrals (requires Fortran)" OFF)
 option(ENABLE_libefp "Enables LIBEFP for fragments" OFF)
 option(ENABLE_erd "Enables use of ERD instead of Libint (requires Fortran)" OFF)
@@ -171,6 +172,7 @@ ExternalProject_Add(psi4-core
            pybind11_external
            simint_external
            libxc_external
+           cint_external
    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/psi4
    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
               -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -198,6 +200,7 @@ ExternalProject_Add(psi4-core
               -DENABLE_ambit=${ENABLE_ambit}
               -DENABLE_CheMPS2=${ENABLE_CheMPS2}
               -DENABLE_dkh=${ENABLE_dkh}
+              -DENABLE_cint=${ENABLE_cint}
               -DENABLE_libefp=${ENABLE_libefp}
               -DENABLE_erd=${ENABLE_erd}
               -DENABLE_simint=${ENABLE_simint}
@@ -208,6 +211,7 @@ ExternalProject_Add(psi4-core
               -Dambit_DIR=${ambit_DIR}
               -DCheMPS2_DIR=${CheMPS2_DIR}
               -Ddkh_DIR=${dkh_DIR}
+              -Dcint_DIR=${cint_DIR}
               -Dlibefp_DIR=${libefp_DIR}
               -Derd_DIR=${erd_DIR}
               -Dgdma_DIR=${gdma_DIR}
