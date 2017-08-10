@@ -21,7 +21,7 @@ if (${ENABLE_cint})
                 -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
                 -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}
                 -DCMAKE_INSTALL_INCLUDEDIR=${CMAKE_INSTALL_INCLUDEDIR}
-                -DNAMESPACE_INSTALL_INCLUDEDIR=/libxc
+                -DNAMESPACE_INSTALL_INCLUDEDIR=/cint
                 -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
                 # OpenMP irrelevant
                 -DENABLE_XHOST=${ENABLE_XHOST}
@@ -32,6 +32,6 @@ if (${ENABLE_cint})
             CMAKE_CACHE_ARGS -DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
             INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install
             DESTDIR=${CMAKE_BINARY_DIR}/stage)
-        set(libcint_DIR ${STAGED_INSTALL_PREFIX}/share/cmake/libcint CACHE PATH "path to internally build libcintConfig.cmake" FORCE)
+        set(cint_DIR ${STAGED_INSTALL_PREFIX}/share/cmake/cint CACHE PATH "path to internally built cintConfig.cmake" FORCE)
     endif ()
 endif ()

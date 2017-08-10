@@ -43,6 +43,8 @@ namespace psi {
 
 class DefaultIntegralFactory
 {
+protected:
+
     /// Center 1 basis set
     std::shared_ptr<BasisSet> bs1_;
     /// Center 2 basis set

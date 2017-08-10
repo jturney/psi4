@@ -38,7 +38,15 @@
 #include "psi4/libmints/liberd/erd_eri.h"
 
 #ifdef USING_simint
+
 #include "psi4/libmints/simint/siminteri.h"
+
+#endif
+
+#ifdef USING_cint
+
+#include "psi4/libmints/libcint/cint_integralfactory.h"
+
 #endif
 
 #include <libint/libint.h>
@@ -52,7 +60,12 @@ IntegralFactory::IntegralFactory(std::shared_ptr<BasisSet> bs1,
                                  std::shared_ptr<BasisSet> bs3,
                                  std::shared_ptr<BasisSet> bs4)
 {
-    pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new DefaultIntegralFactory(bs1, bs2, bs3, bs4));
+    if (Process::environment.options.get_str("INTEGRAL_PACKAGE") == "LIBINT")
+        pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new DefaultIntegralFactory(bs1, bs2, bs3, bs4));
+    else if (Process::environment.options.get_str("INTEGRAL_PACKAGE") == "CINT")
+        pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new CINTIntegralFactory(bs1, bs2, bs3, bs4));
+    else
+        pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new DefaultIntegralFactory(bs1, bs2, bs3, bs4));
 }
 
 IntegralFactory::IntegralFactory(std::shared_ptr<BasisSet> bs1)
@@ -86,7 +99,7 @@ std::shared_ptr<BasisSet> IntegralFactory::basis4() const
 }
 
 void IntegralFactory::set_basis(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
-                std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4)
+                                std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4)
 {
     pImpl_->set_basis(bs1, bs2, bs3, bs4);
 }
@@ -133,7 +146,7 @@ std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_ecp(int deriv)
 
 std::unique_ptr<OneBodySOInt> IntegralFactory::so_ecp(int deriv)
 {
-	return pImpl_->so_ecp(deriv);
+    return pImpl_->so_ecp(deriv);
 }
 
 std::unique_ptr<OneBodyAOInt> IntegralFactory::ao_rel_potential(int deriv)
@@ -325,7 +338,7 @@ RedundantCartesianSubIter* IntegralFactory::redundant_cartesian_sub_iter(int l) 
     return new RedundantCartesianSubIter(l);
 }
 
-ShellRotation IntegralFactory::shell_rotation(int am, SymmetryOperation &so, int pure) const
+ShellRotation IntegralFactory::shell_rotation(int am, SymmetryOperation& so, int pure) const
 {
     ShellRotation r(am, so, pure);
     return r;

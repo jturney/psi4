@@ -156,6 +156,8 @@ include(autocmake_omp)
 include(custom_cxxstandard)
 include(custom_static_library)
 
+message(STATUS "cint_DIR=${cint_DIR}")
+
 ################################  Main Project  ################################
 include(ExternalProject)
 ExternalProject_Add(psi4-core

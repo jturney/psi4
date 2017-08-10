@@ -19,7 +19,6 @@ set(sources_list local.cc
         wavefunction.cc
         irrep.cc
         eribase.cc
-        default/fjt.cc
         chartab.cc
         corrtab.cc
         symop.cc
@@ -53,6 +52,7 @@ set(sources_list local.cc
         default/electricfield.cc
         default/electrostatic.cc
         default/eri.cc
+        default/fjt.cc
         default/kinetic.cc
         default/multipoles.cc
         default/nabla.cc
@@ -69,12 +69,20 @@ set(sources_list local.cc
         default/ecpint.cc
 
         liberd/erd_eri.cc
+
+        libcint/cint_eri.cc
+        libcint/cint_integralfactory.cc
         )
 
 if (TARGET simint::simint)
     list(APPEND sources_list simint/siminteri.cc)
     add_definitions("-DUSING_simint")
 endif ()
+if (TARGET cint::cint)
+    list(APPEND sources_list libcint/cint_eri.cc)
+    add_definitions("-DUSING_cint")
+endif()
+
 psi4_add_module(lib mints sources_list iwl options psi4util trans efp_solver)
 
 target_link_libraries(mints PRIVATE Libint::libint)
@@ -89,4 +97,7 @@ if (TARGET erd::erd)
 endif ()
 if (TARGET simint::simint)
     target_link_libraries(mints PRIVATE simint::simint)
+endif ()
+if (TARGET cint::cint)
+    target_link_libraries(mints PRIVATE cint::cint)
 endif ()
