@@ -47,6 +47,7 @@
 #include "ecpint.h"
 #include "psi4/libmints/basisset.h"
 #include "psi4/libmints/liberd/erd_eri.h"
+#include "psi4/libpsi4util/PsiOutStream.h"
 
 #ifdef USING_simint
 #include "psi4/libmints/simint/siminteri.h"
@@ -305,6 +306,7 @@ std::unique_ptr<TwoBodyAOInt> DefaultIntegralFactory::eri(int deriv, bool use_sh
     if(deriv == 0 && Process::environment.options.get_str("INTEGRAL_PACKAGE") == "ERD")
         return make_unique<TwoBodyAOInt, ERDERI>(deriv, use_shell_pairs);
 #endif
+    outfile->Printf("  Using libint to compute two-electron integrals.\n");
     return make_unique<TwoBodyAOInt, ERI>(bs1_, bs2_, bs3_, bs4_, deriv, use_shell_pairs);
 }
 

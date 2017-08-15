@@ -231,7 +231,7 @@ void ERISieve::integrals()
             double max_val = 0.0;
             for (int p = 0; p < nP; p++) {
                 for (int q = 0; q < nQ; q++) {
-                    max_val = std::max(max_val, std::fabs(buffer[p * (nQ * nP * nQ + nQ) + q * (nP * nQ + 1)]));
+                    max_val = std::max(max_val, std::fabs(buffer[p * (nQ * nP * nQ + nQ) + q * (nP * nQ)]));
                 }
             }
             max_ = std::max(max_, max_val);

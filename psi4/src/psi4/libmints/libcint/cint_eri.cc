@@ -82,7 +82,8 @@ CINTERI::CINTERI(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, s
 
 
     try {
-        target_ = new double[max_cart];
+        target_full_ = new double[max_cart];
+	target_ = target_full_;
     }
     catch (std::bad_alloc& e) {
         outfile->Printf("Error allocating target_.\n%s\n", e.what());
@@ -91,7 +92,8 @@ CINTERI::CINTERI(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, s
     memset(target_, 0, sizeof(double) * max_cart);
 
     try {
-        source_ = new double[max_cart];
+        source_full_ = new double[max_cart];
+	source_ = source_full_;
     }
     catch (std::bad_alloc& e) {
         outfile->Printf("Error allocating source_.\n%s\n", e.what());
@@ -175,11 +177,6 @@ CINTERI::CINTERI(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, s
     nshell_ = basis_shell_start_[3] + nshell;
     natom_ = molecule->natom();
 
-    printf("envsize = %d\n", envsize);
-    printf("off = %d\n", off);
-    printf("nshell = %d\n", nshell_);
-    printf("natom = %d\n", natom_);
-    printf("basis_shell_start %d %d %d %d\n", basis_shell_start_[0], basis_shell_start_[1], basis_shell_start_[2], basis_shell_start_[3]);
     // All data is loaded.
 }
 
@@ -205,19 +202,13 @@ size_t CINTERI::compute_shell(int p, int q, int r, int s)
                                         shell3.is_cartesian() &&
                                         shell4.is_cartesian());
 
-    printf("computing (%d %d | %d %d)\n", p, q, r, s);
-    printf("size %d %d %d %d\n", np, nq, nr, ns);
-    printf("shells %d %d %d %d\n", shells[0], shells[1], shells[2], shells[3]);
-
     int retval = 0;
     if (do_cart) {
         retval = cint2e_cart(target_, shells, atm_.data(), natom_, bas_.data(), nshell_, env_.data(), nullptr);
-        printf("here");
         return retval;
     }
 
     retval = cint2e_cart(source_, shells, atm_.data(), natom_, bas_.data(), nshell_, env_.data(), nullptr);
-    printf("here");
     if (0 != retval) {
         pure_transform(p, q, r, s, 1, false);
         return retval;

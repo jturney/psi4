@@ -225,6 +225,13 @@ if(ENABLE_simint)
     message(STATUS "Adding test cases: Psi4 + simint")
 endif()
 
+# <<< LIBCINT >>
+
+if(ENABLE_cint)
+    add_subdirectory(libcint)
+    message(STATUS "Adding test cases: Psi4 + libcint")
+endif()
+
 # plugin regime
 if(ENABLE_PLUGIN_TESTING)
     add_subdirectory(plugins)

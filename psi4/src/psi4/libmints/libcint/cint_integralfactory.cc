@@ -27,6 +27,8 @@
 
 #include "cint_integralfactory.h"
 #include "cint_eri.h"
+#include "psi4/psi4-dec.h"
+#include "psi4/libpsi4util/PsiOutStream.h"
 
 namespace psi {
 
@@ -41,6 +43,7 @@ CINTIntegralFactory::CINTIntegralFactory(std::shared_ptr<BasisSet> bs1)
 
 std::unique_ptr<TwoBodyAOInt> CINTIntegralFactory::eri(int deriv, bool use_shell_pairs)
 {
+    outfile->Printf("  Using libcint to compute two-electron integrals.\n");
     return std::unique_ptr<TwoBodyAOInt>(new CINTERI(bs1_, bs2_, bs3_, bs4_, deriv));
 }
 
