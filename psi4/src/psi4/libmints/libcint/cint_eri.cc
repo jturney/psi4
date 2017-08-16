@@ -183,14 +183,14 @@ CINTERI::CINTERI(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2, s
 size_t CINTERI::compute_shell(int p, int q, int r, int s)
 {
     int shells[4] = {p+basis_shell_start_[0],
-                    q+basis_shell_start_[1],
-                    r+basis_shell_start_[2],
-                    s+basis_shell_start_[3]};
+                     q+basis_shell_start_[1],
+                     r+basis_shell_start_[2],
+                     s+basis_shell_start_[3]};
 
-    int np = INT_NCART(bas_[basis_shell_start_[0] + p + ANG_OF]);
-    int nq = INT_NCART(bas_[basis_shell_start_[1] + q + ANG_OF]);
-    int nr = INT_NCART(bas_[basis_shell_start_[2] + r + ANG_OF]);
-    int ns = INT_NCART(bas_[basis_shell_start_[3] + s + ANG_OF]);
+    int np = INT_NCART(bas_[shells[0] + ANG_OF]);
+    int nq = INT_NCART(bas_[shells[1] + ANG_OF]);
+    int nr = INT_NCART(bas_[shells[2] + ANG_OF]);
+    int ns = INT_NCART(bas_[shells[3] + ANG_OF]);
 
     const auto& shell1 = original_bs1_->shell(p);
     const auto& shell2 = original_bs2_->shell(q);

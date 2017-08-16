@@ -59,23 +59,30 @@ IntegralFactory::IntegralFactory(std::shared_ptr<BasisSet> bs1,
                                  std::shared_ptr<BasisSet> bs2,
                                  std::shared_ptr<BasisSet> bs3,
                                  std::shared_ptr<BasisSet> bs4)
+        : bs1_(bs1), bs2_(bs2), bs3_(bs3), bs4_(bs4)
 {
-    if (Process::environment.options.get_str("INTEGRAL_PACKAGE") == "LIBINT")
-        pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new DefaultIntegralFactory(bs1, bs2, bs3, bs4));
-    else if (Process::environment.options.get_str("INTEGRAL_PACKAGE") == "CINT")
-        pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new CINTIntegralFactory(bs1, bs2, bs3, bs4));
-    else
-        pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new DefaultIntegralFactory(bs1, bs2, bs3, bs4));
+    set_integral_package(Process::environment.options.get_str("INTEGRAL_PACKAGE"));
 }
 
 IntegralFactory::IntegralFactory(std::shared_ptr<BasisSet> bs1)
+        : bs1_(bs1), bs2_(bs1), bs3_(bs1), bs4_(bs1)
 {
-    pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new DefaultIntegralFactory(bs1, bs1, bs1, bs1));
+    set_integral_package(Process::environment.options.get_str("INTEGRAL_PACKAGE"));
 }
 
 IntegralFactory::~IntegralFactory()
 {
 
+}
+
+void IntegralFactory::set_integral_package(const std::string& factory)
+{
+    if (factory == "LIBINT")
+        pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new DefaultIntegralFactory(bs1_, bs2_, bs3_, bs4_));
+    else if (factory == "CINT")
+        pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new CINTIntegralFactory(bs1_, bs2_, bs3_, bs4_));
+    else
+        pImpl_ = std::unique_ptr<DefaultIntegralFactory>(new DefaultIntegralFactory(bs1_, bs2_, bs3_, bs4_));
 }
 
 std::shared_ptr<BasisSet> IntegralFactory::basis1() const

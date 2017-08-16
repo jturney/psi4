@@ -391,12 +391,17 @@ class IntegralFactory
 {
     std::unique_ptr<DefaultIntegralFactory> pImpl_;
 
+    // Kept around for the set_integral_package function
+    std::shared_ptr<BasisSet> bs1_, bs2_, bs3_, bs4_;
+
 public:
     /** Initialize IntegralFactory object given a BasisSet for each center. */
     IntegralFactory(std::shared_ptr<BasisSet> bs1, std::shared_ptr<BasisSet> bs2,
                     std::shared_ptr<BasisSet> bs3, std::shared_ptr<BasisSet> bs4);
     /** Initialize IntegralFactory object given a BasisSet for two centers. Becomes (bs1 bs1 | bs1 bs1). */
     explicit IntegralFactory(std::shared_ptr<BasisSet> bs1);
+
+    void set_integral_package(const std::string&);
 
     virtual ~IntegralFactory();
 
