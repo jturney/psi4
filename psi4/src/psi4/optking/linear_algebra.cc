@@ -74,7 +74,7 @@ extern int F_DGEEV(char *, char *, int *N1, double *A, int *N2, double *w1, doub
 
 // C functions called from opt that use the BLAS/LAPACK routines
 /*
-  matrix multiplication using DGEMM :  A * B += C 
+  matrix multiplication using DGEMM :  A * B += C
   tA (tB) indicate if A (B) is transposed;
   nr = num of rows
   nl = num of links
@@ -215,8 +215,8 @@ bool opt_asymm_matrix_eig(double **A, int dim, double *evals) {
 
 namespace opt {
 
-/* 
-  Invert a real, symmetric matrix.  If "redundant" == true, then a 
+/*
+  Invert a real, symmetric matrix.  If "redundant" == true, then a
   generalized inverse is permitted.  A is preserved.  Requires lower
   triangle (in C) of matrix.
 */
@@ -291,7 +291,7 @@ void array_copy(double *v_from, double *v_to, int n) {
 void matrix_copy(double **from, double **to, int nr, int nc) {
   double *from1 = from[0];
   double *to1 = to[0];
-  for (int i=0; i<nr*nc; ++i) 
+  for (int i=0; i<nr*nc; ++i)
     to1[i] = from1[i];
 }
 

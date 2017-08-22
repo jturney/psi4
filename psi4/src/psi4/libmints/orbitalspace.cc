@@ -48,46 +48,43 @@
 
 namespace psi {
 
-OrbitalSpace::OrbitalSpace(const std::string &id,
-                           const std::string &name,
-                           const SharedMatrix &full_C,
-                           const std::shared_ptr<Vector> &evals,
-                           const std::shared_ptr<BasisSet> &basis,
-                           const std::shared_ptr<IntegralFactory> &ints)
+OrbitalSpace::OrbitalSpace(const std::string& id,
+                           const std::string& name,
+                           const SharedMatrix& full_C,
+                           const std::shared_ptr<Vector>& evals,
+                           const std::shared_ptr<BasisSet>& basis,
+                           const std::shared_ptr<IntegralFactory>& ints)
         : id_(id),
           name_(name),
           C_(full_C),
           evals_(evals),
           basis_(basis),
-          ints_(ints),
-          dim_(full_C->colspi())
+          ints_(ints)
 {
 }
 
-OrbitalSpace::OrbitalSpace(const std::string &id,
-                           const std::string &name,
-                           const SharedMatrix &full_C,
-                           const std::shared_ptr<BasisSet> &basis,
-                           const std::shared_ptr<IntegralFactory> &ints)
+OrbitalSpace::OrbitalSpace(const std::string& id,
+                           const std::string& name,
+                           const SharedMatrix& full_C,
+                           const std::shared_ptr<BasisSet>& basis,
+                           const std::shared_ptr<IntegralFactory>& ints)
         : id_(id),
           name_(name),
           C_(full_C),
           basis_(basis),
-          ints_(ints),
-          dim_(full_C->colspi())
+          ints_(ints)
 {
 }
 
-OrbitalSpace::OrbitalSpace(const std::string &id,
-                           const std::string &name,
-                           const std::shared_ptr<Wavefunction> &wave)
+OrbitalSpace::OrbitalSpace(const std::string& id,
+                           const std::string& name,
+                           const std::shared_ptr<Wavefunction>& wave)
         : id_(id),
           name_(name),
           C_(wave->Ca()),
           evals_(wave->epsilon_a()),
           basis_(wave->basisset()),
-          ints_(wave->integral()),
-          dim_(wave->Ca()->colspi())
+          ints_(wave->integral())
 {
 }
 
@@ -96,42 +93,52 @@ int OrbitalSpace::nirrep() const
     return C_->nirrep();
 }
 
-const std::string &OrbitalSpace::id() const
+const std::string& OrbitalSpace::id() const
 {
     return id_;
 }
 
-const std::string &OrbitalSpace::name() const
+const std::string& OrbitalSpace::name() const
 {
     return name_;
 }
 
-const SharedMatrix &OrbitalSpace::C() const
+const SharedMatrix& OrbitalSpace::C() const
 {
     return C_;
 }
 
-const std::shared_ptr<Vector> &OrbitalSpace::evals() const
+const std::shared_ptr<Vector>& OrbitalSpace::evals() const
 {
     return evals_;
 }
 
-const std::shared_ptr<BasisSet> &OrbitalSpace::basisset() const
+const std::shared_ptr<BasisSet>& OrbitalSpace::basisset() const
 {
     return basis_;
 }
 
-const std::shared_ptr<IntegralFactory> &OrbitalSpace::integral() const
+const std::shared_ptr<IntegralFactory>& OrbitalSpace::integral() const
 {
     return ints_;
 }
 
-const Dimension &OrbitalSpace::dim() const
+const Dimension& OrbitalSpace::mo_dim() const
 {
-    return dim_;
+    return C_->colspi();
 }
 
-OrbitalSpace OrbitalSpace::transform(const OrbitalSpace &A, const std::shared_ptr<BasisSet> &B)
+const Dimension& OrbitalSpace::so_dim() const
+{
+    return C_->rowspi();
+}
+
+void OrbitalSpace::transpose()
+{
+    C_->transpose_this();
+}
+
+OrbitalSpace OrbitalSpace::transform(const OrbitalSpace& A, const std::shared_ptr<BasisSet>& B)
 {
     SharedMatrix SBA = overlap(B, A.basisset());
     SBA->set_name("Sba");
@@ -149,7 +156,7 @@ OrbitalSpace OrbitalSpace::transform(const OrbitalSpace &A, const std::shared_pt
     SharedMatrix I = Matrix::create("I = SAB SBB SBA", SBA->colspi(), SBA->colspi());
     I->transform(SBB, SBA);
 
-    SharedMatrix T = Matrix::create("T", A.dim(), A.dim());
+    SharedMatrix T = Matrix::create("T", A.mo_dim(), A.mo_dim());
     T->transform(I, A.C());
     I.reset(); // release memory
 
@@ -171,15 +178,10 @@ OrbitalSpace OrbitalSpace::transform(const OrbitalSpace &A, const std::shared_pt
 
     std::shared_ptr<IntegralFactory> i(new IntegralFactory(B, B, B, B));
 
-    return OrbitalSpace("p",
-                        "Ca transformed into Cb",
-                        Cb,
-                        A.evals(),
-                        B,
-                        i);
+    return OrbitalSpace("p", "Ca transformed into Cb", Cb, A.evals(), B, i);
 }
 
-SharedMatrix OrbitalSpace::overlap(const OrbitalSpace &space1, const OrbitalSpace &space2)
+SharedMatrix OrbitalSpace::overlap(const OrbitalSpace& space1, const OrbitalSpace& space2)
 {
     IntegralFactory mix_ints(space1.basisset(), space2.basisset(), space1.basisset(), space2.basisset());
 
@@ -196,8 +198,8 @@ SharedMatrix OrbitalSpace::overlap(const OrbitalSpace &space1, const OrbitalSpac
     return Smat;
 }
 
-SharedMatrix OrbitalSpace::overlap(const std::shared_ptr<BasisSet> &basis1,
-                                   const std::shared_ptr<BasisSet> &basis2)
+SharedMatrix OrbitalSpace::overlap(const std::shared_ptr<BasisSet>& basis1,
+                                   const std::shared_ptr<BasisSet>& basis2)
 {
     IntegralFactory mix_ints(basis1, basis2, basis1, basis2);
     SOBasisSet sobasis1(basis1, &mix_ints);
@@ -218,15 +220,17 @@ void OrbitalSpace::print() const
     outfile->Printf("    Orbital space %s (%s)\n", name_.c_str(), id_.c_str());
     outfile->Printf("        Basis: %s\n", basis_->name().c_str());
     basis_->print_summary();
-    outfile->Printf("        Dimensions: ");
-    dim_.print();
+    outfile->Printf("        MO Dimensions: ");
+    mo_dim().print();
+    outfile->Printf("        SO Dimensions: ");
+    so_dim().print();
 //    outfile->Printf( "        Transformation matrix:\n");
 //    C_->print();
 }
 
 namespace { // anonymous
-OrbitalSpace orthogonalize(const std::string &id, const std::string &name,
-                           const std::shared_ptr<BasisSet> &bs,
+OrbitalSpace orthogonalize(const std::string& id, const std::string& name,
+                           const std::shared_ptr<BasisSet>& bs,
                            double lindep_tol)
 {
     outfile->Printf("    Orthogonalizing basis for space %s.\n", name.c_str());
@@ -243,8 +247,7 @@ OrbitalSpace orthogonalize(const std::string &id, const std::string &name,
         for (int i = 0; i < SODIM[h]; i++) {
             if (std::fabs(evals->get(h, i)) > lindep_tol) {
                 sqrtm->set(h, i, i, 1.0 / sqrt(evals->get(h, i)));
-            }
-            else {
+            } else {
                 sqrtm->set(h, i, i, 0.0);
                 nlindep++;
             }
@@ -259,14 +262,14 @@ OrbitalSpace orthogonalize(const std::string &id, const std::string &name,
     return OrbitalSpace(id, name, sqrtm, bs, localfactory);
 }
 
-OrbitalSpace orthogonal_compliment(const OrbitalSpace &space1, const OrbitalSpace &space2,
-                                   const std::string &id, const std::string &name, const double &lindep_tol)
+OrbitalSpace orthogonal_compliment(const OrbitalSpace& space1, const OrbitalSpace& space2,
+                                   const std::string& id, const std::string& name, const double& lindep_tol)
 {
     outfile->Printf("    Projecting out '%s' from '%s' to obtain space '%s'\n",
                     space1.name().c_str(), space2.name().c_str(), name.c_str());
 
     // If space1 is empty, return a copy of the original space.
-    if (space1.dim().sum() == 0) {
+    if (space1.mo_dim().sum() == 0) {
         outfile->Printf("    '%s' space is empty. Nothing to project out.\n", space1.name().c_str());
         return OrbitalSpace(id, name, space2.C(), space2.evals(), space2.basisset(), space2.integral());
     }
@@ -305,14 +308,14 @@ OrbitalSpace orthogonal_compliment(const OrbitalSpace &space1, const OrbitalSpac
     }
 
     outfile->Printf("        Orbital space before projecting out: ");
-    space2.dim().print();
+    space2.mo_dim().print();
     outfile->Printf("        Orbital space after projecting out:  ");
     zeros.print();
     outfile->Printf("\n");
 
     // Pull out the nullspace vectors
     Dimension dim_zero(space1.nirrep());
-    SharedMatrix V = V11->get_block({dim_zero,V11->rowspi()},{dim_zero,zeros});
+    SharedMatrix V = V11->get_block({dim_zero, V11->rowspi()}, {dim_zero, zeros});
 
     // Half-back transform to space2
     SharedMatrix newC = Matrix::create("Transformation matrix", space2.C()->rowspi(), zeros);
@@ -323,18 +326,18 @@ OrbitalSpace orthogonal_compliment(const OrbitalSpace &space1, const OrbitalSpac
 }
 } // namespace anonymous
 
-OrbitalSpace OrbitalSpace::build_cabs_space(const OrbitalSpace &orb_space, const OrbitalSpace &ri_space,
+OrbitalSpace OrbitalSpace::build_cabs_space(const OrbitalSpace& orb_space, const OrbitalSpace& ri_space,
                                             double lindep_tol)
 {
     return orthogonal_compliment(orb_space, ri_space, "p''", "CABS", lindep_tol);
 }
 
-OrbitalSpace OrbitalSpace::build_ri_space(const std::shared_ptr<Molecule> &molecule, const std::string &obs_key,
-                                          const std::string &aux_key, double lindep_tol)
+OrbitalSpace OrbitalSpace::build_ri_space(const std::shared_ptr<Molecule>& molecule, const std::string& obs_key,
+                                          const std::string& aux_key, double lindep_tol)
 {
     // Construct a combined basis set.
-    Options &options = Process::environment.options;
-    std::vector <std::string> keys, targets, roles, others;
+    Options& options = Process::environment.options;
+    std::vector<std::string> keys, targets, roles, others;
     keys.push_back(obs_key);
     keys.push_back(aux_key);
     targets.push_back(options.get_str(obs_key));

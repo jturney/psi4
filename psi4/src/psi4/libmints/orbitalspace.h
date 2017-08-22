@@ -62,9 +62,6 @@ class OrbitalSpace
     /// Integral factory that as
     std::shared_ptr<IntegralFactory> ints_;
 
-    /// MO Dimensionality
-    Dimension dim_; // dim_.n() better equal nirrep_
-
     /// No default constructor
     OrbitalSpace();
 
@@ -103,7 +100,13 @@ public:
     const std::shared_ptr<IntegralFactory>& integral() const;
 
     /// MO dimensionality
-    const Dimension& dim() const;
+    const Dimension& mo_dim() const;
+
+    /// SO dimensionality
+    const Dimension& so_dim() const;
+
+    /// Transpose the C matrix.
+    void transpose();
 
     /// Print information about the orbital space
     void print() const;

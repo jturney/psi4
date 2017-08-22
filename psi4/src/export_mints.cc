@@ -885,7 +885,8 @@ void export_mints(py::module& m)
         .def("evals", &OrbitalSpace::evals, "Corresponding eigenvalues of the C matrix")
         .def("basisset", &OrbitalSpace::basisset, "The AO basis set used to create C")
         .def("integral", &OrbitalSpace::integral, "The integral factory used to create C")
-        .def("dim", &OrbitalSpace::dim, "MO dimensions")
+        .def("mo_dim", &OrbitalSpace::mo_dim, "MO dimensions")
+        .def("so_dim", &OrbitalSpace::so_dim, "SO dimensions")
         .def("print_out", &OrbitalSpace::print, "Print information about the orbital space to the output file")
         .def_static("build_cabs_space", &OrbitalSpace::build_cabs_space, 
                     "Given two spaces, it projects out one space from the other and returns the new spaces \
