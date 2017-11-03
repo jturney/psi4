@@ -101,6 +101,7 @@ endif()
 include(psi4OptionsTools)
 option_with_print(BUILD_SHARED_LIBS "Build internally built Psi4 add-on libraries as shared, not static" OFF)
 option_with_print(ENABLE_OPENMP "Enables OpenMP parallelization" ON)
+option_with_print(ENABLE_ASAN "Enables address sanitizer compiler flags" OFF)
 option_with_print(ENABLE_AUTO_BLAS "Enables CMake to auto-detect BLAS" ON)
 option_with_print(ENABLE_AUTO_LAPACK "Enables CMake to auto-detect LAPACK" ON)
 option_with_print(ENABLE_PLUGIN_TESTING "Test the plugin templates build and run" OFF)
@@ -110,8 +111,8 @@ option_with_flags(ENABLE_CODE_COVERAGE "Enables details on code coverage" OFF
                   "-ftest-coverage")
 option_with_flags(ENABLE_BOUNDS_CHECK "Enables bounds check in Fortran" OFF
                   "-ftrapuv -check all -fpstkchk" "-fcheck=all" "-fbounds-check -fcheck-array-temporaries")
-option_with_flags(ENABLE_ASAN "Enables address sanitizer" OFF
-                  "-fsanitize=address" "-fno-omit-frame-pointer")
+#option_with_flags(ENABLE_ASAN "Enables address sanitizer" OFF
+              #"-fsanitize=address -fno-omit-frame-pointer")
 option_with_flags(ENABLE_TSAN "Enables thread sanitizer" OFF
                   "-fsanitize=thread" "-fno-omit-frame-pointer -pie")
 option_with_flags(ENABLE_UBSAN "Enables undefined behavior sanitizer" OFF
@@ -153,6 +154,7 @@ add_subdirectory(external/upstream)
 # external projects manage their own OpenMP and c++YY flags, so only add to CXX_FLAGS for psi4-core
 include(custom_cxxstandard)
 include(autocmake_omp)
+include(custom_sanitize)
 include(custom_static_library)
 
 ################################  Main Project  ################################
