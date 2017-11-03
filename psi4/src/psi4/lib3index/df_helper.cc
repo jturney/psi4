@@ -76,8 +76,8 @@ void DF_Helper::prepare_blocking() {
     Qshells_ = aux_->nshell();
     pshells_ = primary_->nshell();
 
-    Qshell_aggs_.reserve(Qshells_ + 1);
-    pshell_aggs_.reserve(pshells_ + 1);
+    Qshell_aggs_.resize(Qshells_ + 1);
+    pshell_aggs_.resize(pshells_ + 1);
 
     // Aux shell blocking
     Qshell_aggs_[0] = 0;
@@ -131,9 +131,9 @@ void DF_Helper::filename_maker(std::string name, size_t a0, size_t a1, size_t a2
     sizes_[filename] = sizes;
 }
 void DF_Helper::initialize() {
-    
+
     timer_on("DFH: initialize()");
-    
+
     // have the algorithm specified before init
     if (method_.compare("DIRECT") && method_.compare("STORE")) {
         std::stringstream error;
@@ -189,10 +189,10 @@ void DF_Helper::prepare_sparsity() {
     // prep info vectors
     std::vector<double> fun_prints(nao_ * nao_, 0.0);
     std::vector<double> shell_prints(pshells_ * pshells_, 0.0);
-    schwarz_fun_mask_.reserve(nao_ * nao_);
-    schwarz_shell_mask_.reserve(pshells_ * pshells_);
-    small_skips_.reserve(nao_ + 1);
-    big_skips_.reserve(nao_ + 1);
+    schwarz_fun_mask_.resize(nao_ * nao_);
+    schwarz_shell_mask_.resize(pshells_ * pshells_);
+    small_skips_.resize(nao_ + 1);
+    big_skips_.resize(nao_ + 1);
 
     // prepare eri buffers
     size_t nthreads = nthreads_;  // for now
@@ -272,8 +272,8 @@ void DF_Helper::prepare_sparsity() {
     }
     small_skips_[nao_] = coltots;
 
-    symm_skips_.reserve(nao_);
-    symm_sizes_.reserve(nao_);
+    symm_skips_.resize(nao_);
+    symm_sizes_.resize(nao_);
     for (size_t i = 0; i < nao_; i++) {
         size_t size = 0;
         size_t skip = 0;
@@ -283,7 +283,7 @@ void DF_Helper::prepare_sparsity() {
         symm_skips_[i] = skip;
     }
 
-    symm_agg_sizes_.reserve(nao_ + 1);
+    symm_agg_sizes_.resize(nao_ + 1);
     symm_agg_sizes_[0] = 0;
     for (size_t i = 1; i < nao_ + 1; i++) symm_agg_sizes_[i] = symm_agg_sizes_[i - 1] + symm_sizes_[i - 1];
 }
@@ -309,15 +309,15 @@ void DF_Helper::prepare_AO() {
     std::vector<double> M;
     std::vector<double> F;
     std::vector<double> metric;
-    M.reserve(std::get<0>(plargest));
-    F.reserve(std::get<0>(plargest));
+    M.resize(std::get<0>(plargest));
+    F.resize(std::get<0>(plargest));
     double* Mp = M.data();
     double* Fp = F.data();
 
     // grab metric
     double* metp;
     if (!hold_met_) {
-        metric.reserve(naux_ * naux_);
+        metric.resize(naux_ * naux_);
         metp = metric.data();
         std::string filename = return_metfile(mpower_);
         get_tensor_(std::get<0>(files_[filename]), metp, 0, naux_ - 1, 0, naux_ - 1);
@@ -342,14 +342,14 @@ void DF_Helper::prepare_AO() {
         size_t block_size = end - begin + 1;
         size_t size = big_skips_[end + 1] - big_skips_[begin];
 
-        
+
         // compute
         timer_on("DFH: Total Workflow");
         timer_on("DFH: AO Construction");
         compute_AO_p(start, stop, Mp, eri);
         timer_off("DFH: AO Construction");
         timer_on("DFH: AO-Met. Contraction");
-        
+
         // loop and contract
 #pragma omp parallel for num_threads(nthreads_) schedule(guided)
         for (size_t j = 0; j < block_size; j++) {
@@ -357,7 +357,7 @@ void DF_Helper::prepare_AO() {
             size_t skips = big_skips_[begin + j] - big_skips_[begin];
             C_DGEMM('N', 'N', naux_, mi, naux_, 1.0, metp, naux_, &Mp[skips], mi, 0.0, &Fp[skips], mi);
         }
-        
+
         timer_off("DFH: AO-Met. Contraction");
         timer_off("DFH: Total Workflow");
 
@@ -385,19 +385,19 @@ void DF_Helper::prepare_AO_core() {
     std::pair<size_t, size_t> plargest = pshell_blocks_for_AO_build(memory_, 1, psteps);
 
     // allocate final AO vector
-    Ppq_.reserve(big_skips_[nao_]);
+    Ppq_.resize(big_skips_[nao_]);
 
     // outfile->Printf("\n    ==> Begin AO Blocked Construction <==\n\n");
     if (!direct_) {
         // declare sparse buffer
         std::vector<double> Qpq;
-        Qpq.reserve(std::get<0>(plargest));
+        Qpq.resize(std::get<0>(plargest));
         double* Mp = Qpq.data();
         double* metp;
         std::vector<double> metric;
 
         if (!hold_met_) {
-            metric.reserve(naux_ * naux_);
+            metric.resize(naux_ * naux_);
             metp = metric.data();
             std::string filename = return_metfile(mpower_);
             get_tensor_(std::get<0>(files_[filename]), metp, 0, naux_ - 1, 0, naux_ - 1);
@@ -1283,8 +1283,8 @@ std::pair<size_t, size_t> DF_Helper::identify_order() {
         bool on = false;
         size_t st = 0;
         std::string str = sorted_spaces_[i].first;
-        std::list<std::string>::iterator itr, end;
-        for (itr = needs.begin(), end = needs.end(); itr != end; ++itr) {
+        std::list<std::string>::iterator itr, tmp;
+        for (itr = needs.begin(); needs.size() && itr != needs.end(); ++itr) {
             op = 0;
             op = (!(std::get<0>(transf_[*itr]).compare(str)) ? 1 : op);
             op = (!(std::get<1>(transf_[*itr]).compare(str)) ? 2 : op);
@@ -1301,8 +1301,9 @@ std::pair<size_t, size_t> DF_Helper::identify_order() {
                 largest = (largest < small ? small : largest);
                 order_.push_back(*itr);
                 st++;
-                needs.erase(itr);
+                tmp = itr;
                 itr--;
+                needs.erase(tmp);
             }
         }
         if (st > 0) {
@@ -1381,18 +1382,18 @@ void DF_Helper::transform_core() {
     // stripe transformed integrals
     for (auto& kv : transf_) {
         size_t size = std::get<1>(spaces_[std::get<0>(kv.second)]) * std::get<1>(spaces_[std::get<1>(kv.second)]);
-        transf_core_[kv.first].reserve(size * naux);
+        transf_core_[kv.first].resize(size * naux);
     }
 
     // scoped buffer declarations
     {
         // declare bufs
         std::vector<double> T;
-        T.reserve(max_block * nao * wtmp);
+        T.resize(max_block * nao * wtmp);
         std::vector<double> F;
-        F.reserve(max_block * wfinal);
+        F.resize(max_block * wfinal);
         std::vector<double> N;
-        N.reserve(max_block * wfinal);
+        N.resize(max_block * wfinal);
         double* Tp = T.data();
         double* Fp = F.data();
         double* Np = N.data();
@@ -1401,7 +1402,7 @@ void DF_Helper::transform_core() {
         std::vector<double> M;  // AOs
         double* Mp;
         if (!AO_core_) {
-            M.reserve(std::get<0>(Qlargest));
+            M.resize(std::get<0>(Qlargest));
             Mp = M.data();
         } else
             Mp = Ppq_.data();
@@ -1544,7 +1545,7 @@ void DF_Helper::transform_core() {
         double* metp;
         std::vector<double> metric;
         if (!hold_met_) {
-            metric.reserve(naux_ * naux_);
+            metric.resize(naux_ * naux_);
             metp = metric.data();
             std::string filename = return_metfile(mpower_);
             get_tensor_(std::get<0>(files_[filename]), metp, 0, naux_ - 1, 0, naux_ - 1);
@@ -1552,7 +1553,7 @@ void DF_Helper::transform_core() {
             metp = metric_prep_core(mpower_);
 
         std::vector<double> N;
-        N.reserve(naux * wfinal);
+        N.resize(naux * wfinal);
         double* Np = N.data();
 
         for (auto& kv : transf_core_) {
@@ -1615,11 +1616,11 @@ void DF_Helper::transform_disk() {
     {
         // declare bufs
         std::vector<double> T;
-        T.reserve(max_block * nao * wtmp);
+        T.resize(max_block * nao * wtmp);
         std::vector<double> F;
-        F.reserve(max_block * wfinal);
+        F.resize(max_block * wfinal);
         std::vector<double> N;
-        N.reserve(max_block * wfinal);
+        N.resize(max_block * wfinal);
         double* Tp = T.data();
         double* Fp = F.data();
         double* Np = N.data();
@@ -1628,7 +1629,7 @@ void DF_Helper::transform_disk() {
         std::vector<double> M;  // AOs
         double* Mp;
         if (!AO_core_) {
-            M.reserve(std::get<0>(Qlargest));
+            M.resize(std::get<0>(Qlargest));
             Mp = M.data();
         } else
             Mp = Ppq_.data();
@@ -1804,8 +1805,8 @@ void DF_Helper::transform_disk() {
 
         std::vector<double> M;
         std::vector<double> F;
-        M.reserve(total_mem);
-        F.reserve(total_mem);
+        M.resize(total_mem);
+        F.resize(total_mem);
         double* Mp = M.data();
         double* Fp = F.data();
         double* metp;
@@ -1817,7 +1818,7 @@ void DF_Helper::transform_disk() {
 
         } else {
             std::vector<double> metric;
-            metric.reserve(naux * naux);
+            metric.resize(naux * naux);
             metp = metric.data();
 
             std::string mfilename = return_metfile(mpower_);
@@ -2244,7 +2245,7 @@ void DF_Helper::transpose_core(std::string name, std::tuple<size_t, size_t, size
     std::tuple<size_t, size_t, size_t> sizes;
 
     std::vector<double> M;
-    M.reserve(M0 * M1 * M2);
+    M.resize(M0 * M1 * M2);
     double* Mp = M.data();
     double* Fp = transf_core_[name].data();
     C_DCOPY(M0 * M1 * M2, Fp, 1, Mp, 1);
@@ -2347,7 +2348,7 @@ void DF_Helper::transpose_disk(std::string name, std::tuple<size_t, size_t, size
     for (size_t i = 0; i < M0; i++) {
         current += M1 * M2;
         count++;
-        if ((current * 2 > memory_) || (i == M0 - 1)) {  // 
+        if ((current * 2 > memory_) || (i == M0 - 1)) {  //
             if (count == 1 && i != M0 - 1) {
                 std::stringstream error;
                 error << "DF_Helper:transpose_disk: not enough memory.";
@@ -2369,8 +2370,8 @@ void DF_Helper::transpose_disk(std::string name, std::tuple<size_t, size_t, size
     // declare
     std::vector<double> M;
     std::vector<double> F;
-    M.reserve(largest);
-    F.reserve(largest);
+    M.resize(largest);
+    F.resize(largest);
     double* Mp = M.data();
     double* Fp = F.data();
     std::tuple<size_t, size_t, size_t> sizes;
@@ -2411,7 +2412,7 @@ void DF_Helper::transpose_disk(std::string name, std::tuple<size_t, size_t, size
         size_t start = std::get<0>(steps[m]);
         size_t stop = std::get<1>(steps[m]);
         M0 = stop - start + 1;
-        
+
         // grab
         get_tensor_(filename, Mp, start, stop, 0, M1 * M2 - 1);
 
@@ -2563,7 +2564,7 @@ void DF_Helper::compute_JK(std::vector<SharedMatrix> Cleft, std::vector<SharedMa
     int rank = 0;
     std::vector<std::vector<double>> C_buffers(nthreads_);
     std::vector<double*> C_bufsp;
-    C_bufsp.reserve(nthreads_);
+    C_bufsp.resize(nthreads_);
 
     // prepare eri buffers
     size_t nthread = nthreads_;
@@ -2593,16 +2594,16 @@ void DF_Helper::compute_JK(std::vector<SharedMatrix> Cleft, std::vector<SharedMa
     // cache alignment (is this over-zealous?)
     rem = totsb * wcleft;
     align_size = (rem % 8 ? rem + (8 - rem % 8) : rem);
-    T1.reserve(nao * align_size);
+    T1.resize(nao * align_size);
     if (JK_hint_) align_size = (nao % 8 ? nao + (8 - nao % 8) : nao);
-    T2.reserve(nao * align_size);
+    T2.resize(nao * align_size);
 
     double* T1p = T1.data();
     double* T2p = T2.data();
     double* Mp;
 
     if (!AO_core_) {
-        M.reserve(tots);
+        M.resize(tots);
         Mp = M.data();
     } else
         Mp = Ppq_.data();
@@ -2707,7 +2708,7 @@ void DF_Helper::compute_J_symm(std::vector<SharedMatrix> D, std::vector<SharedMa
             C_DGEMV('N', block_size, mi, 1.0, &Mp[jump + skip], si, &D_buffers[rank][0], 1, 1.0,
                     &T1p[rank * align_size], 1);
         }
-        
+
         // reduce
         for (size_t k = 1; k < nthreads_; k++) {
             for (size_t l = 0; l < naux; l++) T1p[l] += T1p[k * align_size + l];
@@ -2725,7 +2726,7 @@ void DF_Helper::compute_J_symm(std::vector<SharedMatrix> D, std::vector<SharedMa
             size_t jump = (AO_core_ ? big_skips_[k] + bcount * si : (big_skips_[k] * block_size) / naux);
             C_DGEMV('T', block_size, mi, 1.0, &Mp[jump + skip], si, T1p, 1, 0.0, &T2p[k * align_size], 1);
         }
-        
+
         // unpack from sparse to dense
         for (size_t k = 0; k < nao; k++) {
             for (size_t m = k + 1, count = 0; m < nao; m++) {  // assumes diagonal exists to avoid if  FIXME

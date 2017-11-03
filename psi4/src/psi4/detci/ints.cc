@@ -101,7 +101,7 @@ void CIWavefunction::transform_ci_integrals() {
         orbnum += CalcInfo_->dropped_uocc[h];
     }
 
-    std::shared_ptr<MOSpace> act_space(new MOSpace('X', orbitals, indices));
+    std::shared_ptr<MOSpace> act_space(new MOSpace('X', orbitals));
     spaces.push_back(act_space);
 
     IntegralTransform* ints = new IntegralTransform(H_, Cdrc, Cact, Cvir, Cfzv, spaces, IntegralTransform::Restricted,
@@ -350,8 +350,8 @@ void CIWavefunction::setup_mcscf_ints() {
         rot_orbnum += CalcInfo_->frozen_uocc[h];
     }
 
-    rot_space_ = std::shared_ptr<MOSpace>(new MOSpace('R', rot_orbitals, indices));
-    act_space_ = std::shared_ptr<MOSpace>(new MOSpace('X', act_orbitals, indices));
+    rot_space_ = std::shared_ptr<MOSpace>(new MOSpace('R', rot_orbitals));
+    act_space_ = std::shared_ptr<MOSpace>(new MOSpace('X', act_orbitals));
     spaces.push_back(rot_space_);
     spaces.push_back(act_space_);
 

@@ -111,7 +111,7 @@ MOSpace::MOSpace(const char label, const std::vector<int> aOrbs, const std::vect
 MOSpace::MOSpace(const char label, const std::vector<int> orbsPI):
         label_(label),
         aOrbs_(orbsPI),
-        placeholder_(true)
+        placeholder_(false)
 {
 }
 
