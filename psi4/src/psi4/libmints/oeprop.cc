@@ -1050,7 +1050,7 @@ void OEProp::compute_esp_over_grid()
 {
     std::shared_ptr<Molecule> mol = basisset_->molecule();
 
-    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic()));
+    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic().release()));
 
     outfile->Printf( "\n Electrostatic potential computed on the grid and written to grid_esp.dat\n");
 
@@ -1095,7 +1095,7 @@ void OEProp::compute_field_over_grid()
 {
     std::shared_ptr<Molecule> mol = basisset_->molecule();
 
-    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic()));
+    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic().release()));
 
     outfile->Printf( "\n Field computed on the grid and written to grid_field.dat\n");
 
@@ -1106,7 +1106,7 @@ void OEProp::compute_field_over_grid()
         Dtot->add(wfn_->D_subset_helper(Db_so_, Cb_so_, "AO"));
     }
 
-    std::shared_ptr<ElectricFieldInt> field_ints(dynamic_cast<ElectricFieldInt*>(wfn_->integral()->electric_field()));
+    std::shared_ptr<ElectricFieldInt> field_ints(dynamic_cast<ElectricFieldInt*>(wfn_->integral()->electric_field().release()));
 
     int nbf = basisset_->nbf();
     std::vector<SharedMatrix> intmats;
@@ -1147,7 +1147,7 @@ void OEProp::compute_esp_at_nuclei()
 {
     std::shared_ptr<Molecule> mol = basisset_->molecule();
 
-    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic()));
+    std::shared_ptr<ElectrostaticInt> epot(dynamic_cast<ElectrostaticInt*>(integral_->electrostatic().release()));
 
     int nbf = basisset_->nbf();
     int natoms = mol->natom();

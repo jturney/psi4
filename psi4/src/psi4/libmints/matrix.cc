@@ -1618,7 +1618,8 @@ bool Matrix::add_and_orthogonalize_row(const SharedVector v) {
     return ret;
 }
 
-bool Matrix::schmidt_add_row(int h, int rows, Vector &v) throw() {
+bool Matrix::schmidt_add_row(int h, int rows, Vector &v)
+{
     if (v.nirrep() > 1)
         throw PSIEXCEPTION("Matrix::schmidt_add: This function needs to be adapted to handle symmetry blocks.");
 
@@ -1640,7 +1641,8 @@ bool Matrix::schmidt_add_row(int h, int rows, Vector &v) throw() {
         return false;
 }
 
-bool Matrix::schmidt_add_row(int h, int rows, double *v) throw() {
+bool Matrix::schmidt_add_row(int h, int rows, double *v)
+{
     double dotval, normval;
     int i, I;
 

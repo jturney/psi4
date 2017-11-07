@@ -1165,8 +1165,8 @@ SharedMatrix MintsHelper::so_potential(bool include_perturbations) {
             }
 
             OperatorSymmetry msymm(1, molecule_, integral_, factory_);
-            std::vector<SharedMatrix> dipoles = msymm.create_matrices("Dipole");
-            OneBodySOInt *so_dipole = integral_->so_dipole();
+            std::vector <SharedMatrix> dipoles = msymm.create_matrices("Dipole");
+            auto so_dipole = integral_->so_dipole();
             so_dipole->compute(dipoles);
 
             if (lambda[0] != 0.0) {
@@ -1279,7 +1279,7 @@ std::vector<SharedMatrix> MintsHelper::ao_angular_momentum() {
     angmom.push_back(std::make_shared<Matrix>("AO Ly", basisset_->nbf(), basisset_->nbf()));
     angmom.push_back(std::make_shared<Matrix>("AO Lz", basisset_->nbf(), basisset_->nbf()));
 
-    std::shared_ptr<OneBodyAOInt> ints(integral_->ao_angular_momentum());
+    auto ints = integral_->ao_angular_momentum();
     ints->compute(angmom);
 
     return angmom;
@@ -1293,7 +1293,7 @@ std::vector<SharedMatrix> MintsHelper::ao_dipole() {
     dipole.push_back(std::make_shared<Matrix>("AO Muy", basisset_->nbf(), basisset_->nbf()));
     dipole.push_back(std::make_shared<Matrix>("AO Muz", basisset_->nbf(), basisset_->nbf()));
 
-    std::shared_ptr<OneBodyAOInt> ints(integral_->ao_dipole());
+    auto ints = integral_->ao_dipole();
     ints->compute(dipole);
 
     return dipole;
@@ -1310,7 +1310,7 @@ std::vector<SharedMatrix> MintsHelper::ao_quadrupole() {
     quadrupole.push_back(std::make_shared<Matrix>("AO Quadrupole YZ", basisset_->nbf(), basisset_->nbf()));
     quadrupole.push_back(std::make_shared<Matrix>("AO Quadrupole ZZ", basisset_->nbf(), basisset_->nbf()));
 
-    std::shared_ptr<OneBodyAOInt> ints(integral_->ao_quadrupole());
+    auto ints = integral_->ao_quadrupole();
     ints->compute(quadrupole);
 
     return quadrupole;
@@ -1327,7 +1327,7 @@ std::vector<SharedMatrix> MintsHelper::ao_traceless_quadrupole() {
     quadrupole.push_back(std::make_shared<Matrix>("AO Traceless Quadrupole YZ", basisset_->nbf(), basisset_->nbf()));
     quadrupole.push_back(std::make_shared<Matrix>("AO Traceless Quadrupole ZZ", basisset_->nbf(), basisset_->nbf()));
 
-    std::shared_ptr<OneBodyAOInt> ints(integral_->ao_traceless_quadrupole());
+    auto ints = integral_->ao_traceless_quadrupole();
     ints->compute(quadrupole);
 
     return quadrupole;
@@ -1359,7 +1359,7 @@ std::vector<SharedMatrix> MintsHelper::ao_efp_multipole_potential(const std::vec
     mult.push_back(std::make_shared<Matrix>("AO EFP Octupole YZZ", basisset_->nbf(), basisset_->nbf()));
     mult.push_back(std::make_shared<Matrix>("AO EFP Octupole XYZ", basisset_->nbf(), basisset_->nbf()));
 
-    std::shared_ptr<OneBodyAOInt> ints(integral_->ao_efp_multipole_potential(deriv));
+    auto ints = integral_->ao_efp_multipole_potential(deriv);
     ints->set_origin(v3origin);
     ints->compute(mult);
 
@@ -1375,7 +1375,7 @@ std::vector<SharedMatrix> MintsHelper::electric_field(const std::vector<double> 
     field.push_back(std::make_shared<Matrix>("Ey integrals", basisset_->nbf(), basisset_->nbf()));
     field.push_back(std::make_shared<Matrix>("Ez integrals", basisset_->nbf(), basisset_->nbf()));
 
-    std::shared_ptr<OneBodyAOInt> ints(integral_->electric_field(deriv));
+    auto ints = integral_->electric_field(deriv);
     ints->set_origin(v3origin);
     ints->compute(field);
 
@@ -1390,7 +1390,7 @@ std::vector<SharedMatrix> MintsHelper::ao_nabla() {
     nabla.push_back(std::make_shared<Matrix>("AO Py", basisset_->nbf(), basisset_->nbf()));
     nabla.push_back(std::make_shared<Matrix>("AO Pz", basisset_->nbf(), basisset_->nbf()));
 
-    std::shared_ptr<OneBodyAOInt> ints(integral_->ao_nabla());
+    auto ints = integral_->ao_nabla();
     ints->compute(nabla);
 
     return nabla;

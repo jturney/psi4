@@ -1069,8 +1069,8 @@ public:
      *
      * \returns true if a vector is added, false otherwise
     */
-    bool schmidt_add_row(int h, int rows, Vector& v) throw();
-    bool schmidt_add_row(int h, int rows, double* v) throw();
+    bool schmidt_add_row(int h, int rows, Vector& v);
+    bool schmidt_add_row(int h, int rows, double* v);
     /// @}
 
     /*! Calls libqt schmidt function */
