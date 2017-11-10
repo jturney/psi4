@@ -41,7 +41,6 @@ namespace psi {
   \left\langle\mu \left| {\rm j}\right|\nu\right\rangle\right]
 \end{equation}
 */
-
 struct GIAO_OverlapInt : public OneBodyAOInt
 {
 private:
@@ -49,7 +48,7 @@ private:
     ObaraSaikaTwoCenterRecursion overlap_recur_;
 
     //! Computes the GIAO overlap between two gaussian shells
-    void compute_pair(const GaussianShell&, const GaussianShell&);
+    void compute_pair(const GaussianShell&, const GaussianShell&) override;
 
 public:
 
